@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveDoc Studio Pro – Cập Nhật Văn Bản Trực Tiếp & Code Editor</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sapphire: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#1558C9',
+                            600: '#1047a7',
+                            700: '#0c357d',
+                            800: '#1e3a8a',
+                            900: '#1e3a5f',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'Consolas', 'Monaco', 'monospace']
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2.5s infinite ease-in-out',
+                        'bounce-subtle': 'bounceSubtle 2s infinite ease-in-out',
+                        'float-chibi': 'floatChibi 4s infinite ease-in-out',
+                        'card-float-slow': 'cardFloatSlow 6s infinite ease-in-out',
+                        'shimmer': 'shimmer 2s infinite linear',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(21, 88, 201, 0.2)' },
+                            '50%': { boxShadow: '0 0 30px rgba(37, 99, 235, 0.4)' }
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-4px)' }
+                        },
+                        floatChibi: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        },
+                        cardFloatSlow: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-6px) rotate(0.5deg)' }
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts & Lucide Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script defer src="https://unpkg.com/lucide@0.469.0"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 40%, #f3e8ff 100%);
+            background-attachment: fixed;
+            color: #0f172a;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Light Premium Styles */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card:hover {
+            box-shadow: 0 15px 35px -6px rgba(21, 88, 201, 0.18);
+            transform: translateY(-3px) scale(1.01);
+            border-color: rgba(37, 99, 235, 0.4);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(203, 213, 225, 0.85);
+            color: #0f172a;
+            transition: all 0.25s ease-in-out;
+        }
+        .glass-input:focus {
+            border-color: #1558C9;
+            box-shadow: 0 0 16px rgba(21, 88, 201, 0.28);
+            outline: none;
+            transform: scale(1.005);
+        }
+
+        .sapphire-gradient-btn {
+            background: linear-gradient(135deg, #1558C9 0%, #2563eb 100%);
+            box-shadow: 0 8px 20px -4px rgba(21, 88, 201, 0.35);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .sapphire-gradient-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transform: rotate(30deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        .sapphire-gradient-btn:hover::after {
+            opacity: 1;
+            left: 100%;
+        }
+        .sapphire-gradient-btn:hover {
+            box-shadow: 0 12px 25px rgba(37, 99, 235, 0.5);
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
+        .sapphire-gradient-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Animated Floating Background Orbs */
+        @keyframes floatAnimation {
+            0% { transform: translateY(0px) rotate(0deg) scale(1); }
+            50% { transform: translateY(-30px) rotate(180deg) scale(1.1); }
+            100% { transform: translateY(0px) rotate(360deg) scale(1); }
+        }
+        .floating-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(70px);
+            pointer-events: none;
+            z-index: 0;
+            animation: floatAnimation 20s infinite ease-in-out;
+        }
+        .orb-1 { left: 5%; top: 10%; width: 340px; height: 340px; background: rgba(21, 88, 201, 0.12); animation-duration: 22s; }
+        .orb-2 { right: 8%; top: 35%; width: 400px; height: 400px; background: rgba(99, 102, 241, 0.1); animation-duration: 26s; }
+
+        /* Code Editor Component Styles */
+        .code-editor-box {
+            font-family: 'Fira Code', monospace;
+            background: rgba(248, 250, 252, 0.96);
+            border-radius: 1.25rem;
+            position: relative;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .code-editor-box:focus-within {
+            border-color: rgba(37, 99, 235, 0.5);
+            box-shadow: 0 0 20px rgba(21, 88, 201, 0.15);
+        }
+
+        .line-numbers {
+            font-family: 'Fira Code', monospace;
+            color: #94a3b8;
+            user-select: none;
+            text-align: right;
+            padding-right: 1.25rem;
+            font-size: 0.95rem;
+            line-height: 1.7rem;
+            border-right: 1px solid #e2e8f0;
+            transition: color 0.3s ease;
+        }
+
+        .code-textarea {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.7rem;
+            background: transparent;
+            color: #1e293b;
+            caret-color: #1558C9;
+            resize: none;
+            outline: none;
+            white-space: pre;
+            overflow-x: auto;
+            tab-size: 4;
+        }
+
+        /* Chibi Siri-style Morphing Eyes & Mouth */
+        @keyframes siri-rotate-1 { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes siri-rotate-2 { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+        @keyframes siri-morph-active {
+            0%, 100% { border-radius: 42% 58% 50% 50% / 50% 42% 58% 50%; transform: scale(0.96); }
+            50% { border-radius: 58% 42% 52% 48% / 48% 58% 42% 52%; transform: scale(1.03); }
+        }
+        @keyframes chibiTalk {
+            0%, 100% { height: 4px; width: 10px; border-radius: 50%; }
+            50% { height: 9px; width: 12px; border-radius: 40% 40% 50% 50%; }
+        }
+        .chibi-mouth-talking { animation: chibiTalk 0.4s infinite ease-in-out; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-thumb { background: rgba(21, 88, 201, 0.35); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(37, 99, 235, 0.65); }
+        ::-webkit-scrollbar-track { background: transparent; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-blue-500 selection:text-white">
+
+    <!-- BACKGROUND ANIMATED ORBS -->
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+
+    <!-- NAVBAR HEADER -->
+    <header class="sticky top-0 z-40 w-full glass-header">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-sapphire-600 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 hover:scale-105 transition-transform duration-300">
+                    <i data-lucide="code-2" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-lg sm:text-2xl tracking-tight bg-gradient-to-r from-sapphire-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent block leading-tight">
+                        LiveDoc Studio Pro
+                    </span>
+                    <span class="text-xs font-semibold text-slate-500 block">Đồng Bộ Văn Bản & Code Realtime (.R Engine)</span>
+                </div>
+            </div>
+
+            <!-- User Info / Auth Controls -->
+            <div id="userBar" class="flex items-center space-x-4">
+                <div id="userInfoBox" class="hidden sm:flex flex-col text-right">
+                    <span id="userNameDisplay" class="text-xs sm:text-sm font-bold text-slate-800">Chế độ Tùy Chỉnh (Khách)</span>
+                    <span id="userRoleDisplay" class="text-[11px] font-semibold text-sapphire-600">Đăng nhập MSSV để lưu tên tác giả</span>
+                </div>
+
+                <button id="authBtn" onclick="toggleAuthAction()" class="sapphire-gradient-btn text-white text-xs sm:text-sm font-bold px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl flex items-center space-x-2 shadow-md">
+                    <i data-lucide="log-in" id="authBtnIcon" class="w-4 h-4"></i>
+                    <span id="authBtnText">Đăng Nhập MSSV</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTENT WORKSPACE -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
+
+        <!-- LEFT PANEL: THÔNG TIN CẬP NHẬT & TRẠNG THÁI (4 COLS - RỘNG RÃI) -->
+        <aside class="lg:col-span-4 space-y-5">
+            
+            <!-- Widget Trạng Thái Đồng Bộ -->
+            <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-4 border border-white hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5">
+                        <i data-lucide="activity" class="w-5 h-5 text-sapphire-600 animate-pulse"></i>
+                        <h3 class="font-bold text-base text-slate-900">Trạng Thái Kết Nối</h3>
+                    </div>
+                    <span id="syncBadge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center gap-1.5 transition-all duration-300">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="syncStatusText">Tự động đồng bộ ON</span>
+                    </span>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white/80 border border-slate-200/80 space-y-3 shadow-sm hover:border-blue-200 transition-colors duration-300">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-slate-500 font-medium">Lần cập nhật cuối:</span>
+                        <span id="lastUpdatedTime" class="font-mono text-sapphire-600 font-bold">Đang tải...</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs sm:text-sm pt-2 border-t border-slate-100">
+                        <span class="text-slate-500 font-medium">Người sửa gần nhất:</span>
+                        <span id="lastUserDisplay" class="font-semibold text-emerald-600 truncate max-w-[190px]">Đang tải...</span>
+                    </div>
+                </div>
+
+                <!-- Action Refresh / Save -->
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <button type="button" onclick="fetchLiveData(true)" id="fetchBtn" class="glass-input p-3.5 rounded-2xl text-xs sm:text-sm font-bold text-sapphire-700 hover:bg-blue-50 flex items-center justify-center space-x-2 transition-transform active:scale-95">
+                        <i data-lucide="refresh-cw" id="fetchIcon" class="w-4 h-4"></i>
+                        <span>Tải Mới</span>
+                    </button>
+                    
+                    <button onclick="pushLiveData()" id="pushBtn" class="sapphire-gradient-btn text-white p-3.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 shadow-md active:scale-95">
+                        <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                        <span>Cập Nhật Code</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Widget Tiện Ích Thao Tác Code -->
+            <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-4 border border-white hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center space-x-2.5 border-b border-slate-200 pb-3">
+                    <i data-lucide="sliders" class="w-5 h-5 text-sapphire-600"></i>
+                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Tiện Ích Xử Lý Code</h3>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <button onclick="copyCode()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-sapphire-600 flex items-center space-x-2.5 group active:scale-95">
+                        <i data-lucide="copy" class="w-4 h-4 text-sapphire-500 group-hover:scale-110 transition"></i>
+                        <span class="font-bold">Sao chép Code</span>
+                    </button>
+
+                    <button onclick="pasteCode()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-indigo-600 flex items-center space-x-2.5 group active:scale-95">
+                        <i data-lucide="clipboard-paste" class="w-4 h-4 text-indigo-500 group-hover:scale-110 transition"></i>
+                        <span class="font-bold">Dán Code</span>
+                    </button>
+
+                    <button onclick="downloadCode()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-emerald-600 flex items-center space-x-2.5 group active:scale-95">
+                        <i data-lucide="download" class="w-4 h-4 text-emerald-500 group-hover:scale-110 transition"></i>
+                        <span class="font-bold">Tải tệp .R</span>
+                    </button>
+
+                    <button onclick="clearEditor()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-rose-600 flex items-center space-x-2.5 group border-rose-100 active:scale-95">
+                        <i data-lucide="trash-2" class="w-4 h-4 text-rose-500 group-hover:scale-110 transition"></i>
+                        <span class="font-bold">Xóa Code</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- WIDGET THÔNG TIN THIẾT BỊ & IP -->
+            <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-3.5 border border-white hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center space-x-2.5 border-b border-slate-200 pb-3">
+                    <i data-lucide="laptop" class="w-5 h-5 text-sapphire-600"></i>
+                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Thông Tin Thiết Bị</h3>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 font-medium">Địa chỉ IP:</span>
+                        <span id="userIpDisplay" class="font-mono font-bold text-sapphire-600">Đang lấy...</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-100">
+                        <span class="text-slate-500 font-medium">Hệ điều hành:</span>
+                        <span id="userOsDisplay" class="font-semibold text-slate-800">Windows / Mobile</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-100">
+                        <span class="text-slate-500 font-medium">Trình duyệt:</span>
+                        <span id="userBrowserDisplay" class="font-semibold text-slate-800">Chrome</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-100">
+                        <span class="text-slate-500 font-medium">Phiên bản Web:</span>
+                        <span class="font-mono font-extrabold text-indigo-600">v2.6 Pro (.R)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WIDGET KIỂM TRA TÍN HIỆU MẠNG / PING -->
+            <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-3.5 border border-white hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                    <div class="flex items-center space-x-2.5">
+                        <i data-lucide="wifi" class="w-5 h-5 text-emerald-600"></i>
+                        <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Tín Hiệu Mạng (Ping)</h3>
+                    </div>
+                    <span id="pingBadge" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 transition-all duration-300">
+                        Rất Tốt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-center">
+                    <div class="p-3 rounded-2xl bg-white/80 border border-slate-200/80 transition-transform hover:scale-105">
+                        <span class="block text-[11px] text-slate-500 font-medium">Độ trễ Ping</span>
+                        <strong id="pingMsDisplay" class="text-lg font-extrabold font-mono text-emerald-600">24 ms</strong>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-white/80 border border-slate-200/80 transition-transform hover:scale-105">
+                        <span class="block text-[11px] text-slate-500 font-medium">Đường truyền</span>
+                        <strong id="networkStateDisplay" class="text-xs font-extrabold text-slate-800">Online 100%</strong>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- RIGHT PANEL: TRÌNH SOẠN THẢO CODE EDITOR (8 COLS - MỞ RỘNG) -->
+        <section class="lg:col-span-8 flex flex-col space-y-4">
+            
+            <div class="glass-panel p-4 sm:p-6 rounded-3xl border border-white flex-1 flex flex-col min-h-[640px] hover:shadow-xl transition-shadow duration-300">
+                
+                <!-- Editor Toolbar Header với Ô nhập tên tệp .R tùy chỉnh -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-3.5 mb-3.5 border-b border-slate-200">
+                    <div class="flex items-center space-x-2.5">
+                        <span class="w-3.5 h-3.5 rounded-full bg-rose-400"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-400"></span>
+                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-400"></span>
+                        
+                        <!-- Ô TÙY CHỈNH TÊN FILE .R TẢI VỀ -->
+                        <div class="relative flex items-center ml-2">
+                            <i data-lucide="file-code-2" class="w-4 h-4 text-sapphire-600 absolute left-2.5 pointer-events-none"></i>
+                            <input type="text" id="fileNameInput" value="live_workspace_script" 
+                                placeholder="nhap_ten_file" 
+                                title="Chỉnh sửa tên tệp .R tại đây"
+                                class="glass-input pl-8 pr-8 py-1.5 rounded-xl font-mono text-xs font-bold text-slate-800 w-48 sm:w-56 focus:ring-2 focus:ring-sapphire-500 transition-all">
+                            <span class="absolute right-2.5 font-mono text-xs font-bold text-sapphire-600 pointer-events-none">.R</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 text-xs sm:text-sm">
+                        <span id="editPermissionBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300 transition-all duration-300">
+                            Chế độ: Tùy chỉnh (Khách)
+                        </span>
+                        <span id="charCount" class="font-mono text-slate-500 text-xs font-semibold">0 ký tự</span>
+                    </div>
+                </div>
+
+                <!-- Custom IDE Code Editor Box -->
+                <div class="code-editor-box flex-1 flex p-3 border border-slate-200 shadow-inner">
+                    <div id="lineNumbers" class="line-numbers py-2 pl-2">1</div>
+                    <textarea id="codeEditor" spellcheck="false" oninput="handleEditorInput()" 
+                        placeholder="# Nhập code R hoặc văn bản của bạn tại đây...\n# Bạn có thể tự do chỉnh sửa và tải tệp .R về máy!\n# Nhấn 'Đăng Nhập MSSV' nếu muốn ghi tên tác giả lên máy chủ Cloud."
+                        class="code-textarea flex-1 p-2.5 focus:outline-none"></textarea>
+                </div>
+
+                <!-- Editor Footer Status -->
+                <div class="pt-3.5 flex justify-between items-center text-xs font-mono text-slate-500">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>
+                        <span>R Engine Sync Active</span>
+                    </div>
+                    <div>R Script | UTF-8 | Tab: 4 spaces</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER CHUYÊN NGHIỆP -->
+    <footer class="mt-auto glass-header py-4 px-4 text-xs font-semibold text-slate-600 z-10">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center space-x-2">
+                <span class="text-slate-900 font-bold">LiveDoc Studio Pro</span>
+                <span>•</span>
+                <span class="text-slate-500 text-[11px]">Cập nhật live văn bản & code R qua Google Apps Script</span>
+            </div>
+            <div class="text-[11px] text-slate-400">
+                © 2026 LiveDoc Studio • All rights reserved
+            </div>
+        </div>
+    </footer>
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-panel w-full max-w-md p-6 sm:p-8 rounded-3xl space-y-6 border border-white shadow-2xl relative overflow-hidden bg-white/95 transition-transform duration-300 transform scale-95">
+            
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 mx-auto rounded-2xl sapphire-gradient-btn flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                    <i data-lucide="lock" class="w-6 h-6"></i>
+                </div>
+                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Xác Thực MSSV Tác Giả</h2>
+                <p class="text-xs text-slate-500">Đăng nhập MSSV để lưu tên người chỉnh sửa lên Google Cloud</p>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Mã Số Sinh Viên (MSSV)</label>
+                    <div class="relative">
+                        <i data-lucide="user-check" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" id="mssvInput" placeholder="Ví dụ: B2404646" required 
+                            class="w-full glass-input pl-11 pr-4 py-3 rounded-2xl font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Danh sách MSSV hỗ trợ: B2404646 (Admin), B2404664, B2404641...</p>
+                </div>
+
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeLoginModal()" class="w-1/2 py-3 rounded-2xl glass-input font-bold text-xs text-slate-600 hover:bg-slate-100 transition">Hủy Bỏ</button>
+                    <button type="submit" class="w-1/2 py-3 rounded-2xl sapphire-gradient-btn text-white font-bold text-xs shadow-md">Đăng Nhập</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LIVE CHAT WIDGET GÓC TRÁI DƯỚI (TENCHATY STYLE) -->
+    <div id="liveChatContainer" class="fixed bottom-4 left-4 z-40 flex flex-col items-start">
+        
+        <!-- Live Chat Box Popup -->
+        <div id="chatBoxPopup" class="mb-3 w-[320px] sm:w-[360px] h-[460px] rounded-3xl glass-panel bg-white/95 shadow-2xl border border-blue-200 flex flex-col overflow-hidden transition-all duration-300 opacity-0 scale-95 pointer-events-none origin-bottom-left">
+            
+            <!-- Chat Header -->
+            <div class="sapphire-gradient-btn px-4 py-3.5 text-white flex items-center justify-between shadow-md">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i data-lucide="messages-square" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-xs sm:text-sm">Live Chat Studio</h4>
+                        <span class="text-[10px] text-blue-100 font-semibold block">Trò chuyện nhóm Realtime</span>
+                    </div>
+                </div>
+                <button onclick="toggleChatPopup()" class="p-1.5 rounded-xl hover:bg-white/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages History List -->
+            <div id="chatMessagesList" class="flex-1 p-3.5 space-y-3 overflow-y-auto text-xs bg-slate-50/50">
+                <div class="text-center text-[11px] text-slate-400 py-2">Đang nạp dữ liệu trò chuyện...</div>
+            </div>
+
+            <!-- Chat Input Footer -->
+            <div class="p-3 bg-white border-t border-slate-200">
+                <div id="chatInputArea" class="flex items-center space-x-2">
+                    <input type="text" id="chatMessageInput" placeholder="Nhập tin nhắn..." 
+                        onkeypress="if(event.key==='Enter') sendChatMessage()"
+                        class="flex-1 glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sapphire-500">
+                    <button id="sendChatButton" onclick="sendChatMessage()" aria-label="Gửi tin nhắn" class="sapphire-gradient-btn text-white p-2.5 rounded-xl flex items-center justify-center shadow-md active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed">
+                        <i data-lucide="send" id="sendChatIcon" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="chatSendingIndicator" class="hidden items-center justify-center gap-2 pt-2 text-[10px] font-semibold text-sapphire-600" role="status" aria-live="polite">
+                    <span class="w-3 h-3 rounded-full border-2 border-sapphire-200 border-t-sapphire-600 animate-spin"></span>
+                    <span>Đang gửi tin nhắn...</span>
+                </div>
+                <div id="chatLoginNotice" class="hidden text-center py-1.5">
+                    <button onclick="openLoginModal()" class="text-xs font-bold text-sapphire-600 hover:underline flex items-center justify-center space-x-1.5 mx-auto">
+                        <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+                        <span>Đăng nhập MSSV để tham gia Chat</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Bubble Toggle Button -->
+        <button onclick="toggleChatPopup()" class="sapphire-gradient-btn text-white p-3.5 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 relative group">
+            <i data-lucide="message-circle" class="w-6 h-6 sm:w-7 sm:h-7 animate-bounce-subtle"></i>
+            <span id="unreadChatDot" class="hidden absolute top-0 right-0 w-3.5 h-3.5 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
+        </button>
+    </div>
+
+    <!-- CHIBI BÓNG NƯỚC TƯƠNG TÁC -->
+    <div id="chibiBubbleContainer" class="fixed bottom-4 right-4 z-40 pointer-events-auto flex flex-col items-end group">
+        
+        <!-- Interactive Speech Bubble -->
+        <div id="chibiSpeechBubble" class="mb-2 max-w-[260px] p-3 sm:p-3.5 rounded-2xl glass-panel bg-white/95 text-slate-800 text-xs font-bold shadow-2xl border border-blue-200 transition-all duration-300 opacity-0 translate-y-2 pointer-events-none relative">
+            <span id="chibiSpeechText">Xin chào! Tôi là Chibi LiveDoc Assistant!</span>
+            <div class="absolute -bottom-1.5 right-6 w-3 h-3 bg-white/95 rotate-45 border-r border-b border-blue-200"></div>
+        </div>
+
+        <div class="relative cursor-pointer" onclick="triggerChibiInteraction()">
+            <!-- Glow Shadow -->
+            <div class="absolute inset-0 rounded-full blur-2xl opacity-50 w-20 h-20 -translate-x-2 -translate-y-2" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(14, 165, 233, 0.2) 70%);"></div>
+            
+            <!-- Chibi Morphing Bubble Body -->
+            <div class="relative z-10 w-[72px] h-[72px] overflow-hidden shadow-2xl transition-transform duration-300 group-hover:scale-110" style="animation: siri-morph-active 3.5s ease-in-out infinite; border-radius: 42% 58% 50% 50% / 50% 42% 58% 50%;">
+                <div class="absolute inset-0" style="background: radial-gradient(circle at 35% 35%, rgba(186, 230, 253, 0.95) 0%, rgba(56, 189, 248, 0.85) 45%, rgba(14, 165, 233, 0.95) 100%);"></div>
+                <div class="absolute inset-[-20%] rounded-full" style="background: conic-gradient(transparent 0%, rgba(255, 255, 255, 0.7) 15%, transparent 30%, rgba(56, 189, 248, 0.6) 50%, transparent 65%); filter: blur(6px); animation: siri-rotate-1 4s linear infinite;"></div>
+                <div class="absolute inset-[-15%] rounded-full" style="background: conic-gradient(from 120deg, transparent 0%, rgba(125, 211, 252, 0.5) 20%, transparent 40%); filter: blur(5px); animation: siri-rotate-2 5s linear infinite;"></div>
+            </div>
+
+            <!-- Chibi Eyes & Mouth -->
+            <div class="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center space-y-1">
+                <div id="chibiEyes" class="flex items-center gap-[10px] transition-transform duration-100 ease-out">
+                    <span class="block bg-slate-900 w-2 h-2.5 rounded-full"></span>
+                    <span class="block bg-slate-900 w-2 h-2.5 rounded-full"></span>
+                </div>
+                <div id="chibiMouth" class="w-2.5 h-1 bg-slate-800 rounded-full transition-all duration-300"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        /* =========================================================================
+           1. CẤU HÌNH CỐ ĐỊNH URL GOOGLE APPS SCRIPT VÀ DATABASE MSSV
+           ========================================================================= */
+        const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydUttjvGRZWZGiPcMLxtMbKbYVgd-w8ec2J9-tvA0K3Qyv_ozrKlOTBeeqgrmRQ48tbA/exec"; 
+        
+        const MSSV_DATABASE = {
+            'B2404646': { name: 'Nhật Huy', role: 'Admin' },
+            'B2404664': { name: 'Bá Phúc', role: 'Thành viên' },
+            'B2404641': { name: 'Thanh Đoàn', role: 'Thành viên' },
+            'B2404581': { name: 'Tuấn Anh', role: 'Thành viên' },
+            'B2404639': { name: 'Triều Dương', role: 'Thành viên' }
+        };
+
+        /* State Store */
+        let currentUser = null;
+        let scriptUrl = DEFAULT_SCRIPT_URL;
+        let autoSyncTimer = null;
+        let chibiSpeechTimer = null;
+        let lastKnownTimestamp = "";
+        let lastKnownDocumentVersion = null;
+        let lastKnownDocumentContent = null;
+        let idleTimer = null;
+        let lastChatMessageSignature = null;
+        let isFetchingLiveData = false;
+        let liveDataRequestId = 0;
+        let liveDataAbortController = null;
+        let isFetchingChatData = false;
+        let isSendingChatMessage = false;
+
+        const CHIBI_QUOTES = [
+            "Hệ thống tự động đồng bộ code .R và dữ liệu liên tục đấy nha!",
+            "Bạn có thể đổi tên tệp ở góc trên trước khi bấm 'Tải tệp .R' nha!",
+            "Hãy nhấn 'Đăng Nhập MSSV' nếu muốn ghi tên tác giả khi lưu lên Google Cloud nhé!",
+            "Mở Live Chat ở góc dưới bên trái để trò chuyện cùng mọi người nha!",
+            "Đừng quên bấm 'Sao chép Code' để lấy nhanh toàn bộ mã nguồn R nha!"
+        ];
+
+        /* =========================================================================
+           2. INITIALIZATION
+           ========================================================================= */
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+
+            // Kích hoạt người dùng đã lưu nếu có
+            const savedMssv = localStorage.getItem('livedoc_user_mssv');
+            if (savedMssv && MSSV_DATABASE[savedMssv]) {
+                loginUser(savedMssv, false);
+            } else {
+                updateUIForState();
+            }
+
+            setupEditorLineNumbers();
+            initChibiEyeTracking();
+            fetchDeviceInfo();
+            startPingMonitor();
+            setupIdleDetection();
+
+            // Lời chào ban đầu từ Chibi
+            setTimeout(() => {
+                speakChibi("Chào mừng bạn tới LiveDoc Studio Pro (.R Engine)! Mở Chat ở góc dưới bên trái để trò chuyện nhé.");
+            }, 800);
+
+            // TỰ ĐỘNG BẬT ĐỒNG BỘ LIÊN TỤC KHI VÀO TRANG
+            fetchLiveData();
+            fetchLiveChatData();
+            autoSyncTimer = setInterval(() => {
+                fetchLiveData(false);
+                fetchLiveChatData();
+            }, 4000); // 4 giây đồng bộ 1 lần
+        });
+
+        /* =========================================================================
+           3. AUTHENTICATION (XÁC THỰC THEO MSSV)
+           ========================================================================= */
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            const inner = modal.querySelector('.glass-panel');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            inner.classList.remove('scale-95');
+            inner.classList.add('scale-100');
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModal');
+            const inner = modal.querySelector('.glass-panel');
+            inner.classList.remove('scale-100');
+            inner.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const mssv = document.getElementById('mssvInput').value.trim().toUpperCase();
+            if (MSSV_DATABASE[mssv]) {
+                loginUser(mssv, true);
+                closeLoginModal();
+            } else {
+                speakChibi("Mã số sinh viên không tồn tại trong hệ thống! Vui lòng thử lại.");
+            }
+        }
+
+        function loginUser(mssv, notify = true) {
+            currentUser = { mssv, ...MSSV_DATABASE[mssv] };
+            localStorage.setItem('livedoc_user_mssv', mssv);
+            updateUIForState();
+            if (notify) speakChibi(`Xin chào ${currentUser.name}! Bạn đã xác thực danh tính để ghi tên lưu Cloud.`);
+        }
+
+        function logout() {
+            localStorage.removeItem('livedoc_user_mssv');
+            currentUser = null;
+            updateUIForState();
+            speakChibi("Đã đăng xuất tài khoản. Bạn vẫn có thể sửa code và tải về dạng Tùy chỉnh!");
+        }
+
+        function toggleAuthAction() {
+            if (currentUser) logout();
+            else openLoginModal();
+        }
+
+        function updateUIForState() {
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userRoleDisplay = document.getElementById('userRoleDisplay');
+            const authBtnText = document.getElementById('authBtnText');
+            const authBtnIcon = document.getElementById('authBtnIcon');
+            const editPermissionBadge = document.getElementById('editPermissionBadge');
+            const chatInputArea = document.getElementById('chatInputArea');
+            const chatLoginNotice = document.getElementById('chatLoginNotice');
+
+            if (currentUser) {
+                userNameDisplay.innerText = currentUser.name;
+                userRoleDisplay.innerText = `Quyền Tác Giả: ${currentUser.role}`;
+                authBtnText.innerText = "Đăng Xuất";
+                authBtnIcon.setAttribute('data-lucide', 'log-out');
+
+                editPermissionBadge.innerText = `Tác giả: ${currentUser.name}`;
+                editPermissionBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 transition-all duration-300";
+
+                chatInputArea.classList.remove('hidden');
+                chatLoginNotice.classList.add('hidden');
+            } else {
+                userNameDisplay.innerText = "Chế độ Tùy Chỉnh (Khách)";
+                userRoleDisplay.innerText = "Đăng nhập MSSV để lưu tên tác giả";
+                authBtnText.innerText = "Đăng Nhập MSSV";
+                authBtnIcon.setAttribute('data-lucide', 'log-in');
+
+                editPermissionBadge.innerText = "Chế độ: Tùy chỉnh (Khách)";
+                editPermissionBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300 transition-all duration-300";
+
+                chatInputArea.classList.add('hidden');
+                chatLoginNotice.classList.remove('hidden');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        /* =========================================================================
+           4. LIVE CHAT ENGINE REALTIME
+           ========================================================================= */
+        function toggleChatPopup() {
+            const popup = document.getElementById('chatBoxPopup');
+            const isHidden = popup.classList.contains('opacity-0');
+
+            if (isHidden) {
+                popup.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                popup.classList.add('opacity-100', 'scale-100');
+                document.getElementById('unreadChatDot').classList.add('hidden');
+                scrollChatToBottom();
+            } else {
+                popup.classList.remove('opacity-100', 'scale-100');
+                popup.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+            }
+        }
+
+        async function fetchLiveChatData() {
+            if (!scriptUrl || scriptUrl.includes('YOUR_SCRIPT_ID_HERE') || isFetchingChatData) return;
+
+            isFetchingChatData = true;
+            try {
+                const response = await fetch(buildScriptRequestUrl('read_chat'), { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const messages = await response.json();
+
+                if (Array.isArray(messages)) {
+                    renderChatMessages(messages);
+                }
+            } catch (err) {
+                console.error("Chat Fetch Error:", err);
+            } finally {
+                isFetchingChatData = false;
+            }
+        }
+
+        function renderChatMessages(messages) {
+            const container = document.getElementById('chatMessagesList');
+            if (!messages || messages.length === 0) {
+                container.innerHTML = '<div class="text-center text-[11px] text-slate-400 py-6">Chưa có tin nhắn nào. Hãy gửi lời chào đầu tiên!</div>';
+                lastChatMessageSignature = null;
+                return;
+            }
+
+            const newestMessage = messages[messages.length - 1];
+            const messageSignature = JSON.stringify([newestMessage.text, newestMessage.author, newestMessage.timestamp]);
+            if (lastChatMessageSignature !== null && messageSignature !== lastChatMessageSignature) {
+                const popup = document.getElementById('chatBoxPopup');
+                if (popup.classList.contains('opacity-0')) {
+                    document.getElementById('unreadChatDot').classList.remove('hidden');
+                }
+            }
+            lastChatMessageSignature = messageSignature;
+
+            let html = '';
+            messages.forEach(msg => {
+                const author = formatDisplayName(msg.author || 'Người dùng');
+                const isMe = currentUser && author === currentUser.name;
+                const timestamp = formatChatTime(msg.timestamp);
+
+                if (isMe) {
+                    html += `
+                        <div class="flex flex-col items-end space-y-1">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="text-[10px] text-slate-400">${escapeHTML(timestamp)}</span>
+                                <span class="font-bold text-[11px] text-slate-700">${escapeHTML(author)}</span>
+                            </div>
+                            <div class="sapphire-gradient-btn text-white px-3.5 py-2 rounded-2xl rounded-tr-xs max-w-[85%] shadow-sm break-words leading-relaxed">
+                                ${escapeHTML(msg.text)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="flex flex-col items-start space-y-1">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="font-bold text-[11px] text-slate-700">${escapeHTML(author)}</span>
+                                <span class="text-[10px] text-slate-400">${escapeHTML(timestamp)}</span>
+                            </div>
+                            <div class="bg-white border border-slate-200 text-slate-800 px-3.5 py-2 rounded-2xl rounded-tl-xs max-w-[85%] shadow-sm break-words leading-relaxed">
+                                ${escapeHTML(msg.text)}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            const shouldScrollToBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 48
+                || !container.innerHTML.trim();
+            container.innerHTML = html;
+            if (shouldScrollToBottom) scrollChatToBottom();
+            if (window.lucide) lucide.createIcons();
+        }
+
+        async function sendChatMessage() {
+            if (isSendingChatMessage) return;
+            if (!currentUser) {
+                speakChibi("Vui lòng Đăng Nhập MSSV để tham gia Chat!");
+                openLoginModal();
+                return;
+            }
+
+            const input = document.getElementById('chatMessageInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            const authorStr = currentUser.name;
+
+            input.value = '';
+            isSendingChatMessage = true;
+            setChatSendingState(true);
+
+            try {
+                const payload = {
+                    action: 'write_chat',
+                    text: text,
+                    author: authorStr,
+                    timestamp: timeStr
+                };
+
+                await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                await fetchLiveChatData();
+            } catch (err) {
+                console.error("Chat Send Error:", err);
+                if (!input.value) input.value = text;
+                speakChibi("Không gửi được tin nhắn. Vui lòng kiểm tra kết nối rồi thử lại.");
+            } finally {
+                isSendingChatMessage = false;
+                setChatSendingState(false);
+            }
+        }
+
+        function setChatSendingState(isSending) {
+            const button = document.getElementById('sendChatButton');
+            const icon = document.getElementById('sendChatIcon');
+            const indicator = document.getElementById('chatSendingIndicator');
+            const input = document.getElementById('chatMessageInput');
+            button.disabled = isSending;
+            input.disabled = isSending;
+            indicator.classList.toggle('hidden', !isSending);
+            indicator.classList.toggle('flex', isSending);
+            icon.setAttribute('data-lucide', isSending ? 'loader-circle' : 'send');
+            icon.classList.toggle('animate-spin', isSending);
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function scrollChatToBottom() {
+            const container = document.getElementById('chatMessagesList');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHTML(str) {
+            return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+
+        function formatDisplayName(author) {
+            return String(author).replace(/\s*\(B\d+\)\s*$/i, '').trim();
+        }
+
+        function formatChatTimestamp(timestamp) {
+            if (timestamp === null || timestamp === undefined || timestamp === '') return '';
+            const value = String(timestamp).trim();
+            if (/^\d{1,2}:\d{2}$/.test(value)) return value;
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Ho_Chi_Minh',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hourCycle: 'h23'
+            }).formatToParts(date).reduce((result, part) => {
+                result[part.type] = part.value;
+                return result;
+            }, {});
+            return `${parts.day}/${parts.month}/${parts.year} ${parts.hour}:${parts.minute}`;
+        }
+
+        function formatChatTime(timestamp) {
+            if (timestamp === null || timestamp === undefined || timestamp === '') return '';
+            const value = String(timestamp).trim();
+            const timeOnly = value.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+            if (timeOnly) return `${timeOnly[1].padStart(2, '0')}:${timeOnly[2]}`;
+
+            const timeWithDate = value.match(/(?:^|\s)(\d{1,2}):(\d{2})(?::\d{2})?(?=\s|$)/);
+            if (timeWithDate) return `${timeWithDate[1].padStart(2, '0')}:${timeWithDate[2]}`;
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return '';
+            return new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Ho_Chi_Minh',
+                hour: '2-digit',
+                minute: '2-digit',
+                hourCycle: 'h23'
+            }).format(date);
+        }
+
+        function buildScriptRequestUrl(action) {
+            const url = new URL(scriptUrl);
+            url.searchParams.set('action', action);
+            url.searchParams.set('_', Date.now().toString());
+            return url.toString();
+        }
+
+        /* =========================================================================
+           5. DỮ LIỆU LIVE & TỰ ĐỘNG ĐỒNG BỘ MỐC THỜI GIAN
+           ========================================================================= */
+        async function fetchLiveData(isManual = false) {
+            if (isFetchingLiveData && !isManual) return;
+            if (!scriptUrl || scriptUrl.includes('YOUR_SCRIPT_ID_HERE')) {
+                document.getElementById('lastUpdatedTime').innerText = "Chưa cấu hình URL Script";
+                document.getElementById('lastUserDisplay').innerText = "Chưa kết nối";
+                if (isManual) speakChibi("Chưa cấu hình URL App Script chính xác trong mã HTML!");
+                return;
+            }
+
+            if (isManual && liveDataAbortController) liveDataAbortController.abort();
+
+            if (isManual) speakChibi("Đang truy xuất dữ liệu mới nhất từ Cloud...");
+
+            const requestId = ++liveDataRequestId;
+            const controller = new AbortController();
+            liveDataAbortController = controller;
+            isFetchingLiveData = true;
+            if (isManual) setManualRefreshState(true);
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            try {
+                const response = await fetch(buildScriptRequestUrl('read'), {
+                    cache: 'no-store',
+                    signal: controller.signal
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                if (!data || data.content === undefined) {
+                    throw new Error("Apps Script response does not contain document content");
+                }
+                if (requestId !== liveDataRequestId) return;
+
+                const editor = document.getElementById('codeEditor');
+                const hasVersion = data.version !== undefined && data.version !== null;
+                const hasNewContent = data.content !== lastKnownDocumentContent;
+                const hasNewData = isManual || hasNewContent
+                    || (hasVersion && data.version !== lastKnownDocumentVersion)
+                    || (data.timestamp && data.timestamp !== lastKnownTimestamp);
+                
+                if (hasNewData) {
+                    lastKnownTimestamp = data.timestamp;
+                    if (hasVersion) lastKnownDocumentVersion = data.version;
+                    document.getElementById('lastUpdatedTime').innerText = formatChatTimestamp(data.timestamp) || data.timestamp || '';
+                    document.getElementById('lastUserDisplay').innerText = formatDisplayName(data.author || 'Hệ thống');
+
+                    if (hasNewContent || isManual) {
+                        editor.value = data.content;
+                        updateLineNumbers();
+                        updateCharCount();
+                    }
+
+                    if (!isManual) speakChibi(`Đã tự động cập nhật bản code mới nhất từ ${data.author || 'Cloud'}!`);
+                } else {
+                    document.getElementById('lastUpdatedTime').innerText = formatChatTimestamp(data.timestamp) || data.timestamp || new Date().toLocaleTimeString();
+                    document.getElementById('lastUserDisplay').innerText = formatDisplayName(data.author || 'Hệ thống');
+                }
+                lastKnownDocumentContent = data.content;
+
+                if (isManual) speakChibi("Đã tải dữ liệu mới nhất thành công!");
+            } catch (err) {
+                if (requestId === liveDataRequestId) {
+                    console.error("Fetch Error:", err);
+                    document.getElementById('lastUpdatedTime').innerText = controller.signal.aborted
+                        ? "Hết thời gian chờ"
+                        : "Lỗi kết nối";
+                    if (isManual) speakChibi("Không tải được dữ liệu mới. Vui lòng kiểm tra kết nối hoặc triển khai Apps Script!");
+                }
+            } finally {
+                clearTimeout(timeoutId);
+                if (requestId === liveDataRequestId) {
+                    isFetchingLiveData = false;
+                    liveDataAbortController = null;
+                    setManualRefreshState(false);
+                }
+            }
+        }
+
+        function setManualRefreshState(isLoading) {
+            const button = document.getElementById('fetchBtn');
+            const icon = document.getElementById('fetchIcon');
+            button.disabled = isLoading;
+            button.classList.toggle('opacity-70', isLoading);
+            icon.classList.toggle('animate-spin', isLoading);
+        }
+
+        async function pushLiveData() {
+            if (!currentUser) {
+                speakChibi("Vui lòng Đăng Nhập bằng MSSV để xác nhận danh tính tác giả trước khi lưu lên Cloud!");
+                openLoginModal();
+                return;
+            }
+
+            if (!scriptUrl || scriptUrl.includes('YOUR_SCRIPT_ID_HERE')) {
+                speakChibi("Vui lòng cấu hình URL Google App Script hợp lệ trong code HTML!");
+                return;
+            }
+
+            const content = document.getElementById('codeEditor').value;
+            const now = new Date();
+            const timestampStr = `${now.toLocaleTimeString()} - ${now.toLocaleDateString()}`;
+            const authorStr = currentUser.name;
+
+            speakChibi("Đang lưu bản cập nhật code mới lên Google Cloud...");
+
+            try {
+                const payload = {
+                    action: 'write',
+                    content: content,
+                    author: authorStr,
+                    timestamp: timestampStr
+                };
+
+                await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                lastKnownTimestamp = timestampStr;
+                document.getElementById('lastUpdatedTime').innerText = timestampStr;
+                document.getElementById('lastUserDisplay').innerText = authorStr;
+
+                speakChibi("Đã cập nhật dữ liệu lên Google Cloud thành công!");
+            } catch (err) {
+                console.error("Push Error:", err);
+                speakChibi("Có lỗi xảy ra trong quá trình ghi dữ liệu lên máy chủ.");
+            }
+        }
+
+        /* =========================================================================
+           6. TIỆN ÍCH CODE EDITOR (.R ENGINE & TÙY CHỈNH TÊN FILE TẢI VỀ)
+           ========================================================================= */
+        function setupEditorLineNumbers() {
+            const editor = document.getElementById('codeEditor');
+            editor.addEventListener('scroll', () => {
+                document.getElementById('lineNumbers').scrollTop = editor.scrollTop;
+            });
+            updateLineNumbers();
+        }
+
+        function handleEditorInput() {
+            updateLineNumbers();
+            updateCharCount();
+            resetIdleTimer();
+        }
+
+        function updateLineNumbers() {
+            const editor = document.getElementById('codeEditor');
+            const lines = editor.value.split('\n').length;
+            const lineContainer = document.getElementById('lineNumbers');
+            
+            let lineHTML = '';
+            for (let i = 1; i <= lines; i++) {
+                lineHTML += i + '<br>';
+            }
+            lineContainer.innerHTML = lineHTML;
+        }
+
+        function updateCharCount() {
+            const count = document.getElementById('codeEditor').value.length;
+            document.getElementById('charCount').innerText = `${count} ký tự`;
+        }
+
+        // Feature 1: Sao chép nhanh toàn bộ code
+        function copyCode() {
+            const code = document.getElementById('codeEditor').value;
+            if (!code) {
+                speakChibi("Khung code đang trống, không có dữ liệu để sao chép!");
+                return;
+            }
+            navigator.clipboard.writeText(code).then(() => {
+                speakChibi("Đã sao chép toàn bộ nội dung code .R vào bộ nhớ tạm!");
+            }).catch(() => {
+                const editor = document.getElementById('codeEditor');
+                editor.select();
+                document.execCommand('copy');
+                speakChibi("Đã sao chép toàn bộ code thành công!");
+            });
+        }
+
+        // Feature 2: Dán code từ Clipboard
+        async function pasteCode() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    document.getElementById('codeEditor').value = text;
+                    updateLineNumbers();
+                    updateCharCount();
+                    speakChibi("Đã dán dữ liệu từ Clipboard vào khung biên soạn!");
+                }
+            } catch (err) {
+                speakChibi("Vui lòng nhấn phím Ctrl+V trực tiếp trong khung code để dán.");
+            }
+        }
+
+        // Feature 3: Tải về tệp .R VỚI TÊN NGUỜI DÙNG TÙY CHỈNH
+        function downloadCode() {
+            const text = document.getElementById('codeEditor').value;
+            if (!text) {
+                speakChibi("Nội dung trống, không thể xuất tệp code .R!");
+                return;
+            }
+            
+            // Đọc tên file tùy chỉnh từ input ô Toolbar
+            let customFileName = document.getElementById('fileNameInput').value.trim();
+            if (!customFileName) {
+                customFileName = "live_workspace_script";
+            }
+            
+            // Chuẩn hóa tên tệp không chứa ký tự đặc biệt
+            customFileName = customFileName.replace(/[\\/:*?"<>|]+/g, "_").replace(/\.R$/i, '');
+
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${customFileName}.R`;
+            a.click();
+            URL.revokeObjectURL(url);
+            speakChibi(`Đã xuất tệp code thành công: ${customFileName}.R`);
+        }
+
+        // Feature 4: Xóa toàn bộ code
+        function clearEditor() {
+            document.getElementById('codeEditor').value = '';
+            updateLineNumbers();
+            updateCharCount();
+            speakChibi("Đã dọn dẹp sạch toàn bộ nội dung trong trình soạn thảo!");
+        }
+
+        /* =========================================================================
+           7. WIDGET THÔNG TIN THIẾT BỊ, NETWORK PING & CHIBI AUTO CHAT
+           ========================================================================= */
+        async function fetchDeviceInfo() {
+            // Lấy IP công cộng
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                document.getElementById('userIpDisplay').innerText = data.ip || '127.0.0.1';
+            } catch (e) {
+                document.getElementById('userIpDisplay').innerText = '192.168.1.x';
+            }
+
+            // Nhận diện Hệ điều hành & Trình duyệt
+            const ua = navigator.userAgent;
+            let os = "Windows OS";
+            if (ua.indexOf("Win") !== -1) os = "Windows OS";
+            else if (ua.indexOf("Mac") !== -1) os = "macOS";
+            else if (ua.indexOf("Android") !== -1) os = "Android OS";
+            else if (ua.indexOf("like Mac") !== -1) os = "iOS (iPhone)";
+            else if (ua.indexOf("Linux") !== -1) os = "Linux OS";
+
+            let browser = "Chrome";
+            if (ua.indexOf("Edg") !== -1) browser = "Edge";
+            else if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
+            else if (ua.indexOf("Safari") !== -1 && ua.indexOf("Chrome") === -1) browser = "Safari";
+
+            document.getElementById('userOsDisplay').innerText = os;
+            document.getElementById('userBrowserDisplay').innerText = browser;
+        }
+
+        function startPingMonitor() {
+            setInterval(async () => {
+                const start = Date.now();
+                const pingMsDisplay = document.getElementById('pingMsDisplay');
+                const pingBadge = document.getElementById('pingBadge');
+                const networkStateDisplay = document.getElementById('networkStateDisplay');
+
+                if (!navigator.onLine) {
+                    pingMsDisplay.innerText = "OFFLINE";
+                    pingMsDisplay.className = "text-lg font-extrabold font-mono text-rose-600";
+                    pingBadge.innerText = "Mất Mạng";
+                    pingBadge.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-300";
+                    networkStateDisplay.innerText = "Mất kết nối";
+                    return;
+                }
+
+                try {
+                    await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' });
+                    const latency = Date.now() - start;
+                    pingMsDisplay.innerText = `${latency} ms`;
+                    networkStateDisplay.innerText = "Online 100%";
+
+                    if (latency < 80) {
+                        pingMsDisplay.className = "text-lg font-extrabold font-mono text-emerald-600";
+                        pingBadge.innerText = "Rất Tốt";
+                        pingBadge.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300";
+                    } else if (latency < 200) {
+                        pingMsDisplay.className = "text-lg font-extrabold font-mono text-amber-600";
+                        pingBadge.innerText = "Trung Bình";
+                        pingBadge.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-300";
+                    } else {
+                        pingMsDisplay.className = "text-lg font-extrabold font-mono text-rose-600";
+                        pingBadge.innerText = "Chậm";
+                        pingBadge.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-300";
+                    }
+                } catch (e) {
+                    pingMsDisplay.innerText = "-- ms";
+                }
+            }, 5000);
+        }
+
+        /* Chibi tự động Chat khi người dùng không thao tác */
+        function setupIdleDetection() {
+            const resetTimer = () => {
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(() => {
+                    triggerChibiInteraction();
+                }, 10000);
+            };
+
+            window.addEventListener('mousemove', resetTimer);
+            window.addEventListener('keypress', resetTimer);
+            window.addEventListener('scroll', resetTimer);
+            resetTimer();
+        }
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            setupIdleDetection();
+        }
+
+        /* =========================================================================
+           8. CHIBI ASSISTANT ENGINE
+           ========================================================================= */
+        function speakChibi(text) {
+            const bubble = document.getElementById('chibiSpeechBubble');
+            const chibiText = document.getElementById('chibiSpeechText');
+            const mouth = document.getElementById('chibiMouth');
+
+            chibiText.innerText = text;
+            mouth.classList.add('chibi-mouth-talking');
+
+            bubble.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+            
+            clearTimeout(chibiSpeechTimer);
+            setTimeout(() => { mouth.classList.remove('chibi-mouth-talking'); }, 2000);
+
+            chibiSpeechTimer = setTimeout(() => {
+                bubble.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+            }, 6500);
+        }
+
+        function triggerChibiInteraction() {
+            const quote = CHIBI_QUOTES[Math.floor(Math.random() * CHIBI_QUOTES.length)];
+            speakChibi(quote);
+        }
+
+        function initChibiEyeTracking() {
+            const eyes = document.getElementById('chibiEyes');
+            window.addEventListener('mousemove', (e) => {
+                const rect = eyes.getBoundingClientRect();
+                const eyeX = rect.left + rect.width / 2;
+                const eyeY = rect.top + rect.height / 2;
+                
+                const angle = Math.atan2(e.clientY - eyeY, e.clientX - eyeX);
+                const dist = Math.min(3, Math.hypot(e.clientX - eyeX, e.clientY - eyeY) / 30);
+
+                const x = Math.cos(angle) * dist;
+                const y = Math.sin(angle) * dist;
+
+                eyes.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        }
+    </script>
+</body>
+</html>
