@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LiveDoc Studio Pro – Cập Nhật Văn Bản Trực Tiếp & Code Editor</title>
+    <title>WikyLive – Cập Nhật Code TKNC</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -252,22 +252,22 @@
                 </div>
                 <div>
                     <span class="font-extrabold text-lg sm:text-2xl tracking-tight bg-gradient-to-r from-sapphire-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent block leading-tight">
-                        LiveDoc Studio Pro
+                        WikyLive
                     </span>
-                    <span class="text-xs font-semibold text-slate-500 block">Đồng Bộ Văn Bản & Code Realtime (.R Engine)</span>
+                    <span class="text-xs font-semibold text-slate-500 block">Đồng Bộ Code TKNC Realtime</span>
                 </div>
             </div>
 
             <!-- User Info / Auth Controls -->
             <div id="userBar" class="flex items-center space-x-4">
                 <div id="userInfoBox" class="hidden sm:flex flex-col text-right">
-                    <span id="userNameDisplay" class="text-xs sm:text-sm font-bold text-slate-800">Chế độ Tùy Chỉnh (Khách)</span>
-                    <span id="userRoleDisplay" class="text-[11px] font-semibold text-sapphire-600">Đăng nhập MSSV để lưu tên tác giả</span>
+                    <span id="userNameDisplay" class="text-xs sm:text-sm font-bold text-slate-800">Chế độ Khách</span>
+                    <span id="userRoleDisplay" class="text-[11px] font-semibold text-sapphire-600">Đăng nhập lưu code lên</span>
                 </div>
 
                 <button id="authBtn" onclick="toggleAuthAction()" class="sapphire-gradient-btn text-white text-xs sm:text-sm font-bold px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl flex items-center space-x-2 shadow-md">
                     <i data-lucide="log-in" id="authBtnIcon" class="w-4 h-4"></i>
-                    <span id="authBtnText">Đăng Nhập MSSV</span>
+                    <span id="authBtnText">Đăng Nhập</span>
                 </button>
             </div>
         </div>
@@ -284,11 +284,11 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2.5">
                         <i data-lucide="activity" class="w-5 h-5 text-sapphire-600 animate-pulse"></i>
-                        <h3 class="font-bold text-base text-slate-900">Trạng Thái Kết Nối</h3>
+                        <h3 class="font-bold text-base text-slate-900">Kết Nối</h3>
                     </div>
                     <span id="syncBadge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center gap-1.5 transition-all duration-300">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span id="syncStatusText">Tự động đồng bộ ON</span>
+                        <span id="syncStatusText">Tự động đồng bộ</span>
                     </span>
                 </div>
 
@@ -307,7 +307,7 @@
                 <div class="grid grid-cols-2 gap-3 pt-1">
                     <button type="button" onclick="fetchLiveData(true)" id="fetchBtn" class="glass-input p-3.5 rounded-2xl text-xs sm:text-sm font-bold text-sapphire-700 hover:bg-blue-50 flex items-center justify-center space-x-2 transition-transform active:scale-95">
                         <i data-lucide="refresh-cw" id="fetchIcon" class="w-4 h-4"></i>
-                        <span>Tải Mới</span>
+                        <span>Tải Mới Data</span>
                     </button>
                     
                     <button onclick="pushLiveData()" id="pushBtn" class="sapphire-gradient-btn text-white p-3.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 shadow-md active:scale-95">
@@ -321,11 +321,11 @@
             <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-4 border border-white hover:shadow-xl transition-shadow duration-300">
                 <div class="flex items-center space-x-2.5 border-b border-slate-200 pb-3">
                     <i data-lucide="sliders" class="w-5 h-5 text-sapphire-600"></i>
-                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Tiện Ích Xử Lý Code</h3>
+                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Tiện Ích</h3>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm">
-                    <button onclick="copyCode()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-sapphire-600 flex items-center space-x-2.5 group active:scale-95">
+                    <button type="button" onclick="copyCode()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-sapphire-600 flex items-center space-x-2.5 group active:scale-95">
                         <i data-lucide="copy" class="w-4 h-4 text-sapphire-500 group-hover:scale-110 transition"></i>
                         <span class="font-bold">Sao chép Code</span>
                     </button>
@@ -335,7 +335,7 @@
                         <span class="font-bold">Dán Code</span>
                     </button>
 
-                    <button onclick="downloadCode()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-emerald-600 flex items-center space-x-2.5 group active:scale-95">
+                    <button type="button" onclick="downloadCode()" class="glass-card p-3.5 rounded-2xl text-slate-700 hover:text-emerald-600 flex items-center space-x-2.5 group active:scale-95">
                         <i data-lucide="download" class="w-4 h-4 text-emerald-500 group-hover:scale-110 transition"></i>
                         <span class="font-bold">Tải tệp .R</span>
                     </button>
@@ -369,7 +369,7 @@
                     </div>
                     <div class="flex justify-between items-center pt-1 border-t border-slate-100">
                         <span class="text-slate-500 font-medium">Phiên bản Web:</span>
-                        <span class="font-mono font-extrabold text-indigo-600">v2.6 Pro (.R)</span>
+                        <span class="font-mono font-extrabold text-indigo-600">v3.6 Pro</span>
                     </div>
                 </div>
             </div>
@@ -379,7 +379,7 @@
                 <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                     <div class="flex items-center space-x-2.5">
                         <i data-lucide="wifi" class="w-5 h-5 text-emerald-600"></i>
-                        <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Tín Hiệu Mạng (Ping)</h3>
+                        <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Tín Hiệu Mạng</h3>
                     </div>
                     <span id="pingBadge" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 transition-all duration-300">
                         Rất Tốt
@@ -393,7 +393,7 @@
                     </div>
                     <div class="p-3 rounded-2xl bg-white/80 border border-slate-200/80 transition-transform hover:scale-105">
                         <span class="block text-[11px] text-slate-500 font-medium">Đường truyền</span>
-                        <strong id="networkStateDisplay" class="text-xs font-extrabold text-slate-800">Online 100%</strong>
+                        <strong id="networkStateDisplay" class="text-xs font-extrabold text-slate-800">Online</strong>
                     </div>
                 </div>
             </div>
@@ -415,9 +415,9 @@
                         <!-- Ô TÙY CHỈNH TÊN FILE .R TẢI VỀ -->
                         <div class="relative flex items-center ml-2">
                             <i data-lucide="file-code-2" class="w-4 h-4 text-sapphire-600 absolute left-2.5 pointer-events-none"></i>
-                            <input type="text" id="fileNameInput" value="live_workspace_script" 
+                            <input type="text" id="fileNameInput" value="N03_Tên_STT_V3" 
                                 placeholder="nhap_ten_file" 
-                                title="Chỉnh sửa tên tệp .R tại đây"
+                                title="Chỉnh sửa tên tệp tại đây"
                                 class="glass-input pl-8 pr-8 py-1.5 rounded-xl font-mono text-xs font-bold text-slate-800 w-48 sm:w-56 focus:ring-2 focus:ring-sapphire-500 transition-all">
                             <span class="absolute right-2.5 font-mono text-xs font-bold text-sapphire-600 pointer-events-none">.R</span>
                         </div>
@@ -425,7 +425,7 @@
 
                     <div class="flex items-center space-x-3 text-xs sm:text-sm">
                         <span id="editPermissionBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300 transition-all duration-300">
-                            Chế độ: Tùy chỉnh (Khách)
+                            Chế độ: Khách
                         </span>
                         <span id="charCount" class="font-mono text-slate-500 text-xs font-semibold">0 ký tự</span>
                     </div>
@@ -435,7 +435,7 @@
                 <div class="code-editor-box flex-1 flex p-3 border border-slate-200 shadow-inner">
                     <div id="lineNumbers" class="line-numbers py-2 pl-2">1</div>
                     <textarea id="codeEditor" spellcheck="false" oninput="handleEditorInput()" 
-                        placeholder="# Nhập code R hoặc văn bản của bạn tại đây...\n# Bạn có thể tự do chỉnh sửa và tải tệp .R về máy!\n# Nhấn 'Đăng Nhập MSSV' nếu muốn ghi tên tác giả lên máy chủ Cloud."
+                        placeholder="# Nhập code R hoặc văn bản của bạn tại đây..."
                         class="code-textarea flex-1 p-2.5 focus:outline-none"></textarea>
                 </div>
 
@@ -445,7 +445,7 @@
                         <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>
                         <span>R Engine Sync Active</span>
                     </div>
-                    <div>R Script | UTF-8 | Tab: 4 spaces</div>
+                    <div>R Script | UTF-8 </div>
                 </div>
             </div>
         </section>
@@ -455,12 +455,12 @@
     <footer class="mt-auto glass-header py-4 px-4 text-xs font-semibold text-slate-600 z-10">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
             <div class="flex items-center space-x-2">
-                <span class="text-slate-900 font-bold">LiveDoc Studio Pro</span>
+                <span class="text-slate-900 font-bold">WikyLive</span>
                 <span>•</span>
-                <span class="text-slate-500 text-[11px]">Cập nhật live văn bản & code R qua Google Apps Script</span>
+                <span class="text-slate-500 text-[11px]">Cập nhật code TKNC Realtime</span>
             </div>
             <div class="text-[11px] text-slate-400">
-                © 2026 LiveDoc Studio • All rights reserved
+                © Nh4tHuy
             </div>
         </div>
     </footer>
@@ -473,19 +473,19 @@
                 <div class="w-12 h-12 mx-auto rounded-2xl sapphire-gradient-btn flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
                     <i data-lucide="lock" class="w-6 h-6"></i>
                 </div>
-                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Xác Thực MSSV Tác Giả</h2>
-                <p class="text-xs text-slate-500">Đăng nhập MSSV để lưu tên người chỉnh sửa lên Google Cloud</p>
+                <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Đăng nhập</h2>
+                <p class="text-xs text-slate-500">Đăng nhập để lưu dữ liệu lên và có thể chat online</p>
             </div>
 
             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Mã Số Sinh Viên (MSSV)</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Mã Số Sinh Viên</label>
                     <div class="relative">
                         <i data-lucide="user-check" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                        <input type="text" id="mssvInput" placeholder="Ví dụ: B2404646" required 
+                        <input type="text" id="mssvInput" placeholder="B2404..." required 
                             class="w-full glass-input pl-11 pr-4 py-3 rounded-2xl font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1">Danh sách MSSV hỗ trợ: B2404646 (Admin), B2404664, B2404641...</p>
+              
                 </div>
 
                 <div class="flex space-x-3 pt-2">
@@ -497,7 +497,7 @@
     </div>
 
     <!-- LIVE CHAT WIDGET GÓC TRÁI DƯỚI (TENCHATY STYLE) -->
-    <div id="liveChatContainer" class="fixed bottom-4 left-4 z-40 flex flex-col items-start">
+    <div id="liveChatContainer" class="fixed bottom-4 left-4 z-40 flex flex-col items-start pointer-events-none">
         
         <!-- Live Chat Box Popup -->
         <div id="chatBoxPopup" class="mb-3 w-[320px] sm:w-[360px] h-[460px] rounded-3xl glass-panel bg-white/95 shadow-2xl border border-blue-200 flex flex-col overflow-hidden transition-all duration-300 opacity-0 scale-95 pointer-events-none origin-bottom-left">
@@ -509,7 +509,7 @@
                         <i data-lucide="messages-square" class="w-4 h-4 text-white"></i>
                     </div>
                     <div>
-                        <h4 class="font-extrabold text-xs sm:text-sm">Live Chat Studio</h4>
+                        <h4 class="font-extrabold text-xs sm:text-sm">Live Chat - WikyLive</h4>
                         <span class="text-[10px] text-blue-100 font-semibold block">Trò chuyện nhóm Realtime</span>
                     </div>
                 </div>
@@ -540,25 +540,25 @@
                 <div id="chatLoginNotice" class="hidden text-center py-1.5">
                     <button onclick="openLoginModal()" class="text-xs font-bold text-sapphire-600 hover:underline flex items-center justify-center space-x-1.5 mx-auto">
                         <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
-                        <span>Đăng nhập MSSV để tham gia Chat</span>
+                        <span>Đăng nhập để tham gia Chat</span>
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Chat Bubble Toggle Button -->
-        <button onclick="toggleChatPopup()" class="sapphire-gradient-btn text-white p-3.5 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 relative group">
+        <button onclick="toggleChatPopup()" class="sapphire-gradient-btn text-white p-3.5 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 relative group pointer-events-auto">
             <i data-lucide="message-circle" class="w-6 h-6 sm:w-7 sm:h-7 animate-bounce-subtle"></i>
             <span id="unreadChatDot" class="hidden absolute top-0 right-0 w-3.5 h-3.5 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
         </button>
     </div>
 
     <!-- CHIBI BÓNG NƯỚC TƯƠNG TÁC -->
-    <div id="chibiBubbleContainer" class="fixed bottom-4 right-4 z-40 pointer-events-auto flex flex-col items-end group">
+    <div id="chibiBubbleContainer" class="fixed bottom-4 right-4 z-[60] pointer-events-auto flex flex-col items-end group">
         
         <!-- Interactive Speech Bubble -->
         <div id="chibiSpeechBubble" class="mb-2 max-w-[260px] p-3 sm:p-3.5 rounded-2xl glass-panel bg-white/95 text-slate-800 text-xs font-bold shadow-2xl border border-blue-200 transition-all duration-300 opacity-0 translate-y-2 pointer-events-none relative">
-            <span id="chibiSpeechText">Xin chào! Tôi là Chibi LiveDoc Assistant!</span>
+            <span id="chibiSpeechText">Xin chào! Tôi là Chibi WikyLive!</span>
             <div class="absolute -bottom-1.5 right-6 w-3 h-3 bg-white/95 rotate-45 border-r border-b border-blue-200"></div>
         </div>
 
@@ -616,11 +616,17 @@
         let isSendingChatMessage = false;
 
         const CHIBI_QUOTES = [
-            "Hệ thống tự động đồng bộ code .R và dữ liệu liên tục đấy nha!",
-            "Bạn có thể đổi tên tệp ở góc trên trước khi bấm 'Tải tệp .R' nha!",
-            "Hãy nhấn 'Đăng Nhập MSSV' nếu muốn ghi tên tác giả khi lưu lên Google Cloud nhé!",
-            "Mở Live Chat ở góc dưới bên trái để trò chuyện cùng mọi người nha!",
-            "Đừng quên bấm 'Sao chép Code' để lấy nhanh toàn bộ mã nguồn R nha!"
+            "Hệ thống tự động đồng bộ code và dữ liệu liên tục nhá!",
+             "志同道合",
+            "Nhấp vô teo để coi đoạn chat mới nè!",
+            "Bạn có thể đổi tên tệp ở góc trên trước khi bấm 'Tải tệp .R'!",
+            "歲寒知松柏，患難見真情",
+            "Hãy nhấn 'Đăng Nhập' nếu muốn lưu code lên và chat online nhá!",
+             "情同手足",
+            "Cái gì cũng có cái giá của nó!",
+            "Mở Live Chat ở góc dưới bên trái để trò chuyện cùng mọi người!",
+             "同甘共苦",
+            "Đừng quên bấm 'Sao chép Code' để lấy nhanh toàn bộ mã nguồn nha!"
         ];
 
         /* =========================================================================
@@ -645,7 +651,7 @@
 
             // Lời chào ban đầu từ Chibi
             setTimeout(() => {
-                speakChibi("Chào mừng bạn tới LiveDoc Studio Pro (.R Engine)! Mở Chat ở góc dưới bên trái để trò chuyện nhé.");
+                speakChibi("Chào mừng con gà đã tới WikyLive!");
             }, 800);
 
             // TỰ ĐỘNG BẬT ĐỒNG BỘ LIÊN TỤC KHI VÀO TRANG
@@ -666,6 +672,7 @@
             modal.classList.remove('opacity-0', 'pointer-events-none');
             inner.classList.remove('scale-95');
             inner.classList.add('scale-100');
+            speakChibi("Cửa sổ đăng nhập đang mở. Bạn có thể đăng nhập tại đây.");
         }
 
         function closeLoginModal() {
@@ -683,7 +690,7 @@
                 loginUser(mssv, true);
                 closeLoginModal();
             } else {
-                speakChibi("Mã số sinh viên không tồn tại trong hệ thống! Vui lòng thử lại.");
+                speakChibi("Thông tin đăng nhập không hợp lệ. Vui lòng đừng kiểm tra lại.");
             }
         }
 
@@ -691,7 +698,7 @@
             currentUser = { mssv, ...MSSV_DATABASE[mssv] };
             localStorage.setItem('livedoc_user_mssv', mssv);
             updateUIForState();
-            if (notify) speakChibi(`Xin chào ${currentUser.name}! Bạn đã xác thực danh tính để ghi tên lưu Cloud.`);
+            if (notify) speakChibi(`Xin chào ${currentUser.name}! Bạn đã xác thực danh tính thành công.`);
         }
 
         function logout() {
@@ -727,12 +734,12 @@
                 chatInputArea.classList.remove('hidden');
                 chatLoginNotice.classList.add('hidden');
             } else {
-                userNameDisplay.innerText = "Chế độ Tùy Chỉnh (Khách)";
-                userRoleDisplay.innerText = "Đăng nhập MSSV để lưu tên tác giả";
-                authBtnText.innerText = "Đăng Nhập MSSV";
+                userNameDisplay.innerText = "Chế độ Khách";
+                userRoleDisplay.innerText = "Đăng nhập nếu muốn lưu code lên hệ thống";
+                authBtnText.innerText = "Đăng Nhập";
                 authBtnIcon.setAttribute('data-lucide', 'log-in');
 
-                editPermissionBadge.innerText = "Chế độ: Tùy chỉnh (Khách)";
+                editPermissionBadge.innerText = "Chế độ: Khách";
                 editPermissionBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300 transition-all duration-300";
 
                 chatInputArea.classList.add('hidden');
@@ -750,11 +757,12 @@
 
             if (isHidden) {
                 popup.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                popup.classList.add('pointer-events-auto');
                 popup.classList.add('opacity-100', 'scale-100');
                 document.getElementById('unreadChatDot').classList.add('hidden');
                 scrollChatToBottom();
             } else {
-                popup.classList.remove('opacity-100', 'scale-100');
+                popup.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
                 popup.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
             }
         }
@@ -839,7 +847,7 @@
         async function sendChatMessage() {
             if (isSendingChatMessage) return;
             if (!currentUser) {
-                speakChibi("Vui lòng Đăng Nhập MSSV để tham gia Chat!");
+                speakChibi("Vui lòng Đăng Nhập để tham gia Chat!");
                 openLoginModal();
                 return;
             }
@@ -850,7 +858,7 @@
 
             const now = new Date();
             const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-            const authorStr = currentUser.name;
+            const authorStr = formatDisplayName(currentUser.name);
 
             input.value = '';
             isSendingChatMessage = true;
@@ -906,7 +914,11 @@
         }
 
         function formatDisplayName(author) {
-            return String(author).replace(/\s*\(B\d+\)\s*$/i, '').trim();
+            return String(author)
+                .replace(/\(?\bB\d+\b\)?/gi, '')
+                .replace(/^\s*[-–—|]+|[-–—|]+\s*$/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
         }
 
         function formatChatTimestamp(timestamp) {
@@ -970,7 +982,7 @@
 
             if (isManual && liveDataAbortController) liveDataAbortController.abort();
 
-            if (isManual) speakChibi("Đang truy xuất dữ liệu mới nhất từ Cloud...");
+            if (isManual) speakChibi("Đang truy xuất dữ liệu mới nhất...");
 
             const requestId = ++liveDataRequestId;
             const controller = new AbortController();
@@ -1023,7 +1035,7 @@
                     document.getElementById('lastUpdatedTime').innerText = controller.signal.aborted
                         ? "Hết thời gian chờ"
                         : "Lỗi kết nối";
-                    if (isManual) speakChibi("Không tải được dữ liệu mới. Vui lòng kiểm tra kết nối hoặc triển khai Apps Script!");
+                    if (isManual) speakChibi("Không tải được dữ liệu mới. Vui lòng kiểm tra kết nối!");
                 }
             } finally {
                 clearTimeout(timeoutId);
@@ -1045,7 +1057,7 @@
 
         async function pushLiveData() {
             if (!currentUser) {
-                speakChibi("Vui lòng Đăng Nhập bằng MSSV để xác nhận danh tính tác giả trước khi lưu lên Cloud!");
+                speakChibi("Vui lòng Đăng Nhập để xác nhận danh tính tác giả trước khi lưu!");
                 openLoginModal();
                 return;
             }
@@ -1060,7 +1072,7 @@
             const timestampStr = `${now.toLocaleTimeString()} - ${now.toLocaleDateString()}`;
             const authorStr = currentUser.name;
 
-            speakChibi("Đang lưu bản cập nhật code mới lên Google Cloud...");
+            speakChibi("Đang lưu bản cập nhật code mới...");
 
             try {
                 const payload = {
@@ -1081,7 +1093,7 @@
                 document.getElementById('lastUpdatedTime').innerText = timestampStr;
                 document.getElementById('lastUserDisplay').innerText = authorStr;
 
-                speakChibi("Đã cập nhật dữ liệu lên Google Cloud thành công!");
+                speakChibi("Đã cập nhật dữ liệu thành công!");
             } catch (err) {
                 console.error("Push Error:", err);
                 speakChibi("Có lỗi xảy ra trong quá trình ghi dữ liệu lên máy chủ.");
@@ -1170,13 +1182,14 @@
             
             // Chuẩn hóa tên tệp không chứa ký tự đặc biệt
             customFileName = customFileName.replace(/[\\/:*?"<>|]+/g, "_").replace(/\.R$/i, '');
+            if (!customFileName) customFileName = "live_workspace_script";
 
             const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${customFileName}.R`;
-            a.click();
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${customFileName}.R`;
+            link.click();
             URL.revokeObjectURL(url);
             speakChibi(`Đã xuất tệp code thành công: ${customFileName}.R`);
         }
@@ -1289,7 +1302,7 @@
             const chibiText = document.getElementById('chibiSpeechText');
             const mouth = document.getElementById('chibiMouth');
 
-            chibiText.innerText = text;
+            chibiText.innerText = String(text).replace(/\(?\bB\d+\b\)?/gi, '').replace(/\s+/g, ' ').trim();
             mouth.classList.add('chibi-mouth-talking');
 
             bubble.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
