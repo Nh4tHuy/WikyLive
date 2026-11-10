@@ -147,6 +147,7 @@
             transform: rotate(30deg);
             transition: all 0.5s;
             opacity: 0;
+            pointer-events: none;
         }
         .sapphire-gradient-btn:hover::after {
             opacity: 1;
@@ -159,6 +160,46 @@
         }
         .sapphire-gradient-btn:active {
             transform: translateY(1px);
+        }
+
+        #liveChatContainer .sapphire-gradient-btn {
+            overflow: visible;
+        }
+
+        #liveChatContainer .sapphire-gradient-btn:hover {
+            transform: none;
+            filter: none;
+        }
+
+        #liveChatContainer {
+            left: max(1rem, env(safe-area-inset-left));
+            bottom: max(1rem, env(safe-area-inset-bottom));
+            max-width: calc(100vw - 2rem);
+        }
+
+        #chatBoxPopup {
+            width: min(360px, calc(100vw - 2rem));
+            max-width: calc(100vw - 2rem);
+            height: min(460px, calc(100dvh - 2rem));
+            max-height: calc(100dvh - 2rem);
+            transition-property: opacity, transform;
+            touch-action: pan-y;
+        }
+
+        #chatMessagesList {
+            min-width: 0;
+            overflow-x: hidden;
+            overflow-wrap: anywhere;
+        }
+
+        #chatInputArea,
+        #chatMessageInput {
+            min-width: 0;
+        }
+
+        #unreadChatDot {
+            z-index: 9999;
+            isolation: isolate;
         }
 
         /* Animated Floating Background Orbs */
@@ -467,13 +508,20 @@
                 <div class="grid grid-cols-2 gap-3 pt-1">
                     <button type="button" onclick="fetchLiveData(true)" id="fetchBtn" class="glass-input p-3.5 rounded-2xl text-xs sm:text-sm font-bold text-sapphire-700 hover:bg-blue-50 flex items-center justify-center space-x-2 transition-transform active:scale-95">
                         <i data-lucide="refresh-cw" id="fetchIcon" class="w-4 h-4"></i>
-                        <span>Tải Mới Data</span>
+                        <span>Data Mới</span>
                     </button>
                     
-                    <button onclick="pushLiveData()" id="pushBtn" class="sapphire-gradient-btn text-white p-3.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 shadow-md active:scale-95">
-                        <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-                        <span>Cập Nhật Code</span>
-                    </button>
+                    <div class="flex items-stretch gap-2 min-w-0">
+                        <button onclick="pushLiveData()" id="pushBtn" class="sapphire-gradient-btn text-white p-3.5 rounded-2xl text-xs sm:text-sm font-bold flex flex-1 min-w-0 items-center justify-center space-x-2 shadow-md active:scale-95">
+                            <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                            <span>Update</span>
+                        </button>
+                        <button type="button" onclick="clearBrowserData()" aria-label="Xóa dữ liệu WikyLive trên trình duyệt"
+                            title="Xóa bản nháp, phiên đăng nhập và cookie có thể truy cập"
+                            class="glass-input px-3 rounded-2xl text-rose-600 hover:bg-rose-50 hover:border-rose-200 flex items-center justify-center transition-colors active:scale-95">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -481,7 +529,7 @@
             <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-4 border border-white hover:shadow-xl transition-shadow duration-300">
                 <div class="flex items-center space-x-2.5 border-b border-slate-200 pb-3">
                     <i data-lucide="sliders" class="w-5 h-5 text-sapphire-600"></i>
-                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Tiện Ích</h3>
+                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 tracking-wider">Tiện Ích</h3>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm">
@@ -505,13 +553,31 @@
                         <span class="font-bold">Xóa Code</span>
                     </button>
                 </div>
+                <div class="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+                    <span class="text-slate-500 font-medium">Thời gian hiện tại</span>
+                    <time id="utilityClock" class="font-mono font-bold text-sapphire-700" aria-live="off">--:--:--</time>
+                </div>
+            </div>
+
+            <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-3 border border-white">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <i data-lucide="history" class="w-5 h-5 text-sapphire-600"></i>
+                        <h3 class="font-bold text-sm text-slate-900">Lịch sử phiên bản</h3>
+                    </div>
+                    <button type="button" id="refreshHistoryBtn" onclick="loadSidebarHistory(true)" class="glass-input px-2.5 py-1.5 rounded-lg text-xs font-bold text-sapphire-700">Làm mới</button>
+                </div>
+                <div id="sidebarHistoryList" class="space-y-2" aria-live="polite">
+                    <p class="text-xs text-slate-500">Đang tải lịch sử...</p>
+                </div>
+                <p id="sidebarHistoryStatus" class="text-[11px] text-slate-500"></p>
             </div>
 
             <!-- WIDGET THÔNG TIN THIẾT BỊ & IP -->
             <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-3.5 border border-white hover:shadow-xl transition-shadow duration-300">
                 <div class="flex items-center space-x-2.5 border-b border-slate-200 pb-3">
                     <i data-lucide="laptop" class="w-5 h-5 text-sapphire-600"></i>
-                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 uppercase tracking-wider">Thông Tin Thiết Bị</h3>
+                    <h3 class="font-bold text-xs sm:text-sm text-slate-800 tracking-wider">Thông Tin Thiết Bị</h3>
                 </div>
 
                 <div class="space-y-2.5 text-xs">
@@ -584,14 +650,25 @@
                     </div>
 
                     <div class="flex items-center space-x-3 text-xs sm:text-sm">
+                        <div class="flex items-center gap-1">
+                            <button type="button" id="undoBtn" onclick="undoEditor()" class="glass-input px-2.5 py-1.5 rounded-lg font-bold" title="Hoàn tác (Ctrl+Z)" aria-label="Hoàn tác">↶</button>
+                            <button type="button" id="redoBtn" onclick="redoEditor()" class="glass-input px-2.5 py-1.5 rounded-lg font-bold" title="Làm lại (Ctrl+Y)" aria-label="Làm lại">↷</button>
+                        </div>
                         <span id="editPermissionBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300 transition-all duration-300">
-                            Chế độ: Khách
+                           Khách
                         </span>
                         <span id="charCount" class="font-mono text-slate-500 text-xs font-semibold">0 ký tự</span>
                     </div>
                 </div>
 
                 <!-- Custom IDE Code Editor Box -->
+                <div id="historyPreviewControls" class="hidden flex-wrap items-center justify-between gap-2 mt-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs">
+                    <span id="historyPreviewLabel" class="font-bold text-amber-800">Đang xem phiên bản cũ</span>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="applyHistoryPreview()" class="sapphire-gradient-btn text-white px-3 py-1.5 rounded-lg font-bold">Áp dụng</button>
+                        <button type="button" onclick="cancelHistoryPreview()" class="glass-input px-3 py-1.5 rounded-lg font-bold">Đóng xem</button>
+                    </div>
+                </div>
                 <div class="code-editor-box flex-1 flex p-3 border border-slate-200 shadow-inner">
                     <div id="lineNumbers" class="line-numbers py-2 pl-2">1</div>
                     <textarea id="codeEditor" spellcheck="false" oninput="handleEditorInput()" 
@@ -603,9 +680,9 @@
                 <div class="pt-3.5 flex justify-between items-center text-xs font-mono text-slate-500">
                     <div class="flex items-center space-x-2">
                         <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>
-                        <span>R Engine Sync Active</span>
+                        <span id="draftStatus" role="status" aria-live="polite">Bản nháp sẵn sàng</span>
                     </div>
-                    <div>R Script | UTF-8 </div>
+                    <div class="flex items-center gap-2"><span>R Script | UTF-8</span></div>
                 </div>
             </div>
         </section>
@@ -631,7 +708,7 @@
             
             <div class="text-center space-y-2">
                 <div class="w-12 h-12 mx-auto rounded-2xl sapphire-gradient-btn flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                    <i data-lucide="lock" class="w-6 h-6"></i>
+                    <i data-lucide="user-check" class="w-6 h-6"></i>
                 </div>
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Đăng nhập</h2>
                 <p class="text-xs text-slate-500">Đăng nhập để lưu dữ liệu lên và có thể chat online</p>
@@ -642,10 +719,11 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Mã Số Sinh Viên</label>
                     <div class="relative">
                         <i data-lucide="user-check" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                        <input type="text" id="mssvInput" placeholder="B2404..." required 
-                            class="w-full glass-input pl-11 pr-4 py-3 rounded-2xl font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
+                        <input type="text" id="mssvInput" placeholder="Ví dụ: B2404646" required
+                            autocomplete="username" autocapitalize="characters" spellcheck="false" inputmode="text"
+                            class="w-full glass-input pl-11 pr-4 py-3.5 rounded-2xl font-mono text-sm sm:text-base font-extrabold uppercase tracking-[0.12em] text-slate-900 placeholder:font-medium placeholder:tracking-normal placeholder:text-slate-400">
                     </div>
-              
+
                 </div>
 
                 <div class="flex space-x-3 pt-2">
@@ -669,7 +747,7 @@
                         <i data-lucide="messages-square" class="w-4 h-4 text-white"></i>
                     </div>
                     <div>
-                        <h4 class="font-extrabold text-xs sm:text-sm">Live Chat - WikyLive</h4>
+                        <h4 class="font-extrabold text-xs sm:text-sm">Live Chat</h4>
                         <span class="text-[10px] text-blue-100 font-semibold block">Trò chuyện nhóm Realtime</span>
                     </div>
                 </div>
@@ -683,6 +761,13 @@
                 <div class="text-center text-[11px] text-slate-400 py-2">Đang nạp dữ liệu trò chuyện...</div>
             </div>
 
+            <div class="px-3 pt-2 bg-white border-t border-slate-100">
+                <div id="hiddenMessagesPanel" class="hidden py-2 text-[11px] text-slate-500">
+                    <span id="hiddenMessagesCount">Không có tin nhắn ẩn</span>
+                    <button type="button" onclick="restoreHiddenMessages()" class="ml-2 font-bold text-sapphire-600">Hiện lại tất cả</button>
+                </div>
+            </div>
+
             <!-- Chat Input Footer -->
             <div class="p-3 bg-white border-t border-slate-200">
                 <div id="chatInputArea" class="flex items-center space-x-2">
@@ -693,6 +778,7 @@
                         <i data-lucide="send" id="sendChatIcon" class="w-4 h-4"></i>
                     </button>
                 </div>
+
                 <div id="chatSendingIndicator" class="hidden items-center justify-center gap-2 pt-2 text-[10px] font-semibold text-sapphire-600" role="status" aria-live="polite">
                     <span class="w-3 h-3 rounded-full border-2 border-sapphire-200 border-t-sapphire-600 animate-spin"></span>
                     <span>Đang gửi tin nhắn...</span>
@@ -707,9 +793,9 @@
         </div>
 
         <!-- Chat Bubble Toggle Button -->
-        <button onclick="toggleChatPopup()" class="sapphire-gradient-btn text-white p-3.5 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 relative group pointer-events-auto">
+        <button onclick="toggleChatPopup()" class="sapphire-gradient-btn !overflow-visible isolate text-white p-3.5 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 relative group pointer-events-auto">
             <i data-lucide="message-circle" class="w-6 h-6 sm:w-7 sm:h-7 animate-bounce-subtle"></i>
-            <span id="unreadChatDot" class="hidden absolute top-0 right-0 w-3.5 h-3.5 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
+            <span id="unreadChatDot" class="hidden absolute -top-1 -right-1 z-[9999] w-4 h-4 bg-rose-500 rounded-full border-[3px] border-white shadow-lg ring-2 ring-rose-200 animate-pulse pointer-events-none"></span>
         </button>
     </div>
 
@@ -749,20 +835,16 @@
         /* =========================================================================
            1. CẤU HÌNH CỐ ĐỊNH URL GOOGLE APPS SCRIPT VÀ DATABASE MSSV
            ========================================================================= */
-        const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydUttjvGRZWZGiPcMLxtMbKbYVgd-w8ec2J9-tvA0K3Qyv_ozrKlOTBeeqgrmRQ48tbA/exec"; 
+        const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5U4lADCc-bzMZhqAwRpAq1Gh3gpGGYK_-v1Al1l4bhPJYJr-UOM_cbbAZUaRbR2F2lQ/exec"; 
         
-        const MSSV_DATABASE = {
-            'B2404646': { name: 'Nhật Huy', role: 'Admin' },
-            'B2404664': { name: 'Bá Phúc', role: 'Thành viên' },
-            'B2404641': { name: 'Thanh Đoàn', role: 'Thành viên' },
-            'B2404581': { name: 'Tuấn Anh', role: 'Thành viên' },
-            'B2404639': { name: 'Triều Dương', role: 'Thành viên' }
-        };
+        const MSSV_DATABASE = Object.freeze({});
 
         /* State Store */
         let currentUser = null;
         let scriptUrl = DEFAULT_SCRIPT_URL;
         let autoSyncTimer = null;
+        let chatSyncTimer = null;
+        let lastBackgroundDocumentSyncAt = 0;
         let chibiSpeechTimer = null;
         let lastKnownTimestamp = "";
         let lastKnownDocumentVersion = null;
@@ -778,10 +860,10 @@
         const CHIBI_QUOTES = [
             "Hệ thống tự động đồng bộ code và dữ liệu liên tục nhá!",
              "志同道合",
-            "Nhấp vô teo để coi đoạn chat mới nè!",
+            "Nhấp vô để coi đoạn chat mới nè!",
             "Bạn có thể đổi tên tệp ở góc trên trước khi bấm 'Tải tệp .R'!",
             "歲寒知松柏，患難見真情",
-            "Hãy nhấn 'Đăng Nhập' nếu muốn lưu code lên và chat online nhá!",
+            "Hãy Đăng Nhập nếu muốn lưu code lên và chat online nhá!",
              "情同手足",
             "Cái gì cũng có cái giá của nó!",
             "Mở Live Chat ở góc dưới bên trái để trò chuyện cùng mọi người!",
@@ -795,32 +877,37 @@
         window.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) lucide.createIcons();
 
-            // Kích hoạt người dùng đã lưu nếu có
-            const savedMssv = localStorage.getItem('livedoc_user_mssv');
-            if (savedMssv && MSSV_DATABASE[savedMssv]) {
-                loginUser(savedMssv, false);
-            } else {
-                updateUIForState();
-            }
+            updateUIForState();
 
             setupEditorLineNumbers();
             initChibiEyeTracking();
             fetchDeviceInfo();
             startPingMonitor();
             setupIdleDetection();
+            updateUtilityClock();
+            setInterval(updateUtilityClock, 1000);
 
             // Lời chào ban đầu từ Chibi
             setTimeout(() => {
-                speakChibi("Chào mừng con gà đã tới WikyLive!");
+                speakChibi("Chào mừng ní đã tới WikyLive!");
             }, 800);
 
             // TỰ ĐỘNG BẬT ĐỒNG BỘ LIÊN TỤC KHI VÀO TRANG
             fetchLiveData();
             fetchLiveChatData();
             autoSyncTimer = setInterval(() => {
-                fetchLiveData(false);
+                const now = Date.now();
+                if (document.visibilityState === 'visible' ||
+                    now - lastBackgroundDocumentSyncAt >= 30000) {
+                    if (document.visibilityState !== 'visible') {
+                        lastBackgroundDocumentSyncAt = now;
+                    }
+                    fetchLiveData(false);
+                }
+            }, 5000);
+            chatSyncTimer = setInterval(() => {
                 fetchLiveChatData();
-            }, 4000); // 4 giây đồng bộ 1 lần
+            }, 15000);
         });
 
         /* =========================================================================
@@ -832,7 +919,8 @@
             modal.classList.remove('opacity-0', 'pointer-events-none');
             inner.classList.remove('scale-95');
             inner.classList.add('scale-100');
-            speakChibi("Cửa sổ đăng nhập đang mở. Bạn có thể đăng nhập tại đây.");
+            setTimeout(() => document.getElementById('mssvInput').focus(), 100);
+            speakChibi("Bạn có thể đăng nhập tại đây bằng MSSV.");
         }
 
         function closeLoginModal() {
@@ -884,11 +972,11 @@
 
             if (currentUser) {
                 userNameDisplay.innerText = currentUser.name;
-                userRoleDisplay.innerText = `Quyền Tác Giả: ${currentUser.role}`;
+                userRoleDisplay.innerText = `${currentUser.role}`;
                 authBtnText.innerText = "Đăng Xuất";
                 authBtnIcon.setAttribute('data-lucide', 'log-out');
 
-                editPermissionBadge.innerText = `Tác giả: ${currentUser.name}`;
+                editPermissionBadge.innerText = `${currentUser.name}`;
                 editPermissionBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 transition-all duration-300";
 
                 chatInputArea.classList.remove('hidden');
@@ -899,7 +987,7 @@
                 authBtnText.innerText = "Đăng Nhập";
                 authBtnIcon.setAttribute('data-lucide', 'log-in');
 
-                editPermissionBadge.innerText = "Chế độ: Khách";
+                editPermissionBadge.innerText = "Khách";
                 editPermissionBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300 transition-all duration-300";
 
                 chatInputArea.classList.add('hidden');
@@ -1018,29 +1106,12 @@
             const text = input.value.trim();
             if (!text) return;
 
-            const now = new Date();
-            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-            const authorStr = formatDisplayName(currentUser.name);
-
             input.value = '';
             isSendingChatMessage = true;
             setChatSendingState(true);
 
             try {
-                const payload = {
-                    action: 'write_chat',
-                    text: text,
-                    author: authorStr,
-                    timestamp: timeStr
-                };
-
-                await fetch(scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                });
-
+                await apiRequest('write_chat', { text: text }, 20000);
                 await fetchLiveChatData();
             } catch (err) {
                 console.error("Chat Send Error:", err);
@@ -1219,7 +1290,7 @@
 
         async function pushLiveData() {
             if (!currentUser) {
-                speakChibi("Vui lòng Đăng Nhập để xác nhận danh tính tác giả trước khi lưu!");
+                speakChibi("Vui lòng Đăng Nhập để xác nhận danh tính trước khi lưu!");
                 openLoginModal();
                 return;
             }
@@ -1230,30 +1301,13 @@
             }
 
             const content = document.getElementById('codeEditor').value;
-            const now = new Date();
-            const timestampStr = `${now.toLocaleTimeString()} - ${now.toLocaleDateString()}`;
-            const authorStr = currentUser.name;
-
             speakChibi("Đang lưu bản cập nhật code mới...");
 
             try {
-                const payload = {
-                    action: 'write',
+                await apiRequest('write', {
                     content: content,
-                    author: authorStr,
-                    timestamp: timestampStr
-                };
-
-                await fetch(scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                lastKnownTimestamp = timestampStr;
-                document.getElementById('lastUpdatedTime').innerText = timestampStr;
-                document.getElementById('lastUserDisplay').innerText = authorStr;
+                    expectedVersion: lastKnownDocumentVersion == null ? 0 : lastKnownDocumentVersion
+                }, 30000);
 
                 speakChibi("Đã cập nhật dữ liệu thành công!");
             } catch (err) {
@@ -1281,14 +1335,14 @@
 
         function updateLineNumbers() {
             const editor = document.getElementById('codeEditor');
-            const lines = editor.value.split('\n').length;
-            const lineContainer = document.getElementById('lineNumbers');
-            
-            let lineHTML = '';
-            for (let i = 1; i <= lines; i++) {
-                lineHTML += i + '<br>';
+            let lines = 1;
+            for (let i = 0; i < editor.value.length; i++) {
+                if (editor.value.charCodeAt(i) === 10) lines++;
             }
-            lineContainer.innerHTML = lineHTML;
+            const lineContainer = document.getElementById('lineNumbers');
+            const lineHTML = new Array(lines);
+            for (let i = 0; i < lines; i++) lineHTML[i] = String(i + 1);
+            lineContainer.innerHTML = lineHTML.join('<br>') + '<br>';
         }
 
         function updateCharCount() {
@@ -1304,7 +1358,7 @@
                 return;
             }
             navigator.clipboard.writeText(code).then(() => {
-                speakChibi("Đã sao chép toàn bộ nội dung code .R vào bộ nhớ tạm!");
+                speakChibi("Đã sao chép toàn bộ nội dung code vào bộ nhớ tạm!");
             }).catch(() => {
                 const editor = document.getElementById('codeEditor');
                 editor.select();
@@ -1498,6 +1552,929 @@
                 eyes.style.transform = `translate(${x}px, ${y}px)`;
             });
         }
+    </script>
+    <script>
+        const DRAFT_STORAGE_KEY = 'wikylive_prompt_draft_v2';
+        const SESSION_TOKEN_KEY = 'wikylive_session_token';
+        const SESSION_USER_KEY = 'wikylive_session_user';
+        const HISTORY_LIMIT = 100;
+        var sessionToken = '';
+        try { sessionToken = localStorage.getItem(SESSION_TOKEN_KEY) || ''; }
+        catch (error) { console.warn('Không thể đọc phiên đăng nhập đã lưu:', error);         }
+        var cachedChatMessages = [];
+        var versionHistoryCache = [];
+        var editorUndoStack = [];
+        var editorRedoStack = [];
+        var editorLastValue = '';
+        var editorGroupTimer = null;
+        var editorGroupedInput = false;
+        var draftSaveTimer = null;
+        var draftReady = false;
+        var pendingCloudConflict = null;
+        var pendingCloudSave = false;
+        var browserDataCleanupInProgress = false;
+        var localDraftBaseContent = null;
+        var syncRetryDelay = 5000;
+        var syncRetryTimer = null;
+        var editorListenersReady = false;
+        var idleListenersReady = false;
+        var eyeTrackingReady = false;
+        var hiddenMessagesMode = false;
+        var chatFetchRequested = false;
+        var chatRenderSignature = '';
+        var historyPreviewActive = false;
+        var historyPreviewOriginal = '';
+        var historyPreviewVersion = null;
+
+        function setSyncStatus(text, state) {
+            const label = document.getElementById('syncStatusText');
+            const badge = document.getElementById('syncBadge');
+            if (!label || !badge) return;
+            label.textContent = text;
+            badge.className = 'text-xs font-extrabold px-3 py-1 rounded-full border flex items-center gap-1.5 transition-all duration-300';
+            const styles = {
+                good: 'bg-emerald-100 text-emerald-700 border-emerald-300',
+                pending: 'bg-amber-100 text-amber-700 border-amber-300',
+                error: 'bg-rose-100 text-rose-700 border-rose-300'
+            };
+            badge.classList.add(...(styles[state] || styles.good).split(' '));
+        }
+
+        function updateEditorHistoryButtons() {
+            const undo = document.getElementById('undoBtn');
+            const redo = document.getElementById('redoBtn');
+            if (undo) undo.disabled = editorUndoStack.length === 0;
+            if (redo) redo.disabled = editorRedoStack.length === 0;
+        }
+
+        function rememberEditorValue(value, grouped) {
+            if (value === editorLastValue) return;
+            if (!grouped || !editorGroupedInput) {
+                editorUndoStack.push(editorLastValue);
+                if (editorUndoStack.length > HISTORY_LIMIT) editorUndoStack.shift();
+                editorRedoStack.length = 0;
+            }
+            editorGroupedInput = Boolean(grouped);
+            editorLastValue = value;
+            clearTimeout(editorGroupTimer);
+            editorGroupTimer = setTimeout(() => { editorGroupedInput = false; }, 700);
+            updateEditorHistoryButtons();
+        }
+
+        function handleEditorInput() {
+            const value = document.getElementById('codeEditor').value;
+            rememberEditorValue(value, true);
+            updateLineNumbers();
+            updateCharCount();
+            resetIdleTimer();
+            scheduleDraftSave();
+            setSyncStatus('Thay đổi cục bộ', 'pending');
+        }
+
+        function applyEditorValue(value, options) {
+            const settings = options || {};
+            const editor = document.getElementById('codeEditor');
+            const next = String(value == null ? '' : value);
+            if (next === editor.value) return;
+            if (settings.record !== false) rememberEditorValue(next, false);
+            editor.value = next;
+            editorLastValue = next;
+            updateLineNumbers();
+            updateCharCount();
+            if (settings.save !== false) {
+                scheduleDraftSave();
+                setSyncStatus('Thay đổi cục bộ', 'pending');
+                document.getElementById('draftStatus').textContent = 'Có thay đổi cục bộ';
+            }
+            if (settings.focus) editor.focus();
+            updateEditorHistoryButtons();
+        }
+
+        function undoEditor() {
+            if (historyPreviewActive || !editorUndoStack.length) return;
+            const editor = document.getElementById('codeEditor');
+            editorRedoStack.push(editor.value);
+            const previous = editorUndoStack.pop();
+            editor.value = previous;
+            editorLastValue = previous;
+            editorGroupedInput = false;
+            updateLineNumbers();
+            updateCharCount();
+            scheduleDraftSave();
+            setSyncStatus('Thay đổi cục bộ', 'pending');
+            document.getElementById('draftStatus').textContent = 'Có thay đổi cục bộ';
+            updateEditorHistoryButtons();
+        }
+
+        function redoEditor() {
+            if (historyPreviewActive || !editorRedoStack.length) return;
+            const editor = document.getElementById('codeEditor');
+            editorUndoStack.push(editor.value);
+            const next = editorRedoStack.pop();
+            editor.value = next;
+            editorLastValue = next;
+            editorGroupedInput = false;
+            updateLineNumbers();
+            updateCharCount();
+            scheduleDraftSave();
+            setSyncStatus('Thay đổi cục bộ', 'pending');
+            document.getElementById('draftStatus').textContent = 'Có thay đổi cục bộ';
+            updateEditorHistoryButtons();
+        }
+
+        function setupEditorLineNumbers() {
+            const editor = document.getElementById('codeEditor');
+            if (!editorListenersReady) {
+                editor.addEventListener('scroll', () => {
+                    document.getElementById('lineNumbers').scrollTop = editor.scrollTop;
+                }, { passive: true });
+                editorListenersReady = true;
+            }
+            if (!draftReady) {
+                const draft = readLocalDraft();
+                if (draft) {
+                    editor.value = draft.content;
+                    lastKnownDocumentVersion = draft.baseVersion == null ? null : Number(draft.baseVersion);
+                    localDraftBaseContent = typeof draft.baseContent === 'string' ? draft.baseContent : null;
+                }
+                editorLastValue = editor.value;
+                draftReady = true;
+            }
+            updateLineNumbers();
+            updateCharCount();
+            updateEditorHistoryButtons();
+        }
+
+        function readLocalDraft() {
+            try {
+                const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+                if (!raw) return null;
+                const draft = JSON.parse(raw);
+                return draft && typeof draft.content === 'string' ? draft : null;
+            } catch (error) {
+                console.error('Không đọc được bản nháp cục bộ:', error);
+                return null;
+            }
+        }
+
+        function scheduleDraftSave() {
+            const status = document.getElementById('draftStatus');
+            if (status) status.textContent = 'Đang lưu bản nháp...';
+            clearTimeout(draftSaveTimer);
+            draftSaveTimer = setTimeout(saveLocalDraft, 400);
+        }
+
+        function saveLocalDraft() {
+            if (browserDataCleanupInProgress) return;
+            try {
+                localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({
+                    content: historyPreviewActive
+                        ? historyPreviewOriginal
+                        : document.getElementById('codeEditor').value,
+                    baseVersion: lastKnownDocumentVersion,
+                    baseContent: localDraftBaseContent !== null
+                        ? localDraftBaseContent
+                        : lastKnownDocumentContent,
+                    updatedAt: new Date().toISOString()
+                }));
+                const status = document.getElementById('draftStatus');
+                if (status) status.textContent = 'Bản nháp đã lưu trên thiết bị';
+            } catch (error) {
+                console.error('Không lưu được bản nháp:', error);
+                const status = document.getElementById('draftStatus');
+                if (status) status.textContent = 'Không lưu được bản nháp';
+            }
+        }
+
+        function clearBrowserData() {
+            if (!confirm('Xóa bản nháp, phiên đăng nhập và cookie có thể truy cập của tên miền hiện tại? Code trên Google Sheets không bị xóa. Trang sẽ tải lại và lấy code từ hệ thống. Cookie HttpOnly không thể xóa từ trang web.')) {
+                return;
+            }
+
+            browserDataCleanupInProgress = true;
+            clearTimeout(draftSaveTimer);
+            clearTimeout(syncRetryTimer);
+            clearInterval(autoSyncTimer);
+            clearInterval(chatSyncTimer);
+            try {
+                [
+                    DRAFT_STORAGE_KEY,
+                    SESSION_TOKEN_KEY,
+                    SESSION_USER_KEY,
+                    'livedoc_user_mssv'
+                ].forEach(key => localStorage.removeItem(key));
+
+                const cookieNames = document.cookie.split(';')
+                    .map(cookie => cookie.split('=')[0].trim())
+                    .filter(Boolean);
+                const pathParts = window.location.pathname.split('/').filter(Boolean);
+                const cookiePaths = ['/'];
+                for (let i = 1; i <= pathParts.length; i++) {
+                    cookiePaths.push('/' + pathParts.slice(0, i).join('/') + (i < pathParts.length ? '/' : ''));
+                }
+                const hostParts = window.location.hostname.split('.');
+                const cookieDomains = [];
+                for (let i = 0; i < hostParts.length - 1; i++) {
+                    cookieDomains.push(hostParts.slice(i).join('.'));
+                }
+
+                cookieNames.forEach(name => {
+                    cookiePaths.forEach(path => {
+                        document.cookie = `${name}=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; SameSite=Lax`;
+                        cookieDomains.forEach(domain => {
+                            document.cookie = `${name}=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; SameSite=Lax`;
+                        });
+                    });
+                });
+
+                sessionToken = '';
+                currentUser = null;
+                pendingCloudSave = false;
+                window.setTimeout(() => window.location.reload(), 250);
+            } catch (error) {
+                browserDataCleanupInProgress = false;
+                console.error('Không thể dọn dữ liệu WikyLive trên trình duyệt:', error);
+                speakChibi('Không thể xóa toàn bộ dữ liệu trình duyệt: ' + error.message);
+            }
+        }
+
+        async function apiRequest(action, data, timeoutMs) {
+            if (!scriptUrl || scriptUrl.includes('YOUR_SCRIPT_ID_HERE')) {
+                throw new Error('Chưa cấu hình URL Apps Script.');
+            }
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs || 20000);
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(Object.assign({ action: action, token: sessionToken }, data || {})),
+                    cache: 'no-store',
+                    signal: controller.signal
+                });
+                if (!response.ok) throw new Error('Máy chủ trả về HTTP ' + response.status);
+                const result = await response.json();
+                if (!result || result.status === 'error') {
+                    if (result && result.code === 'AUTH_REQUIRED') {
+                        sessionToken = '';
+                        localStorage.removeItem(SESSION_TOKEN_KEY);
+                        localStorage.removeItem(SESSION_USER_KEY);
+                        currentUser = null;
+                        updateUIForState();
+                    }
+                    const error = new Error(result && result.message ? result.message : 'Phản hồi máy chủ không hợp lệ.');
+                    if (result && result.current) error.current = result.current;
+                    throw error;
+                }
+                return result;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function updateUIForState() {
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userRoleDisplay = document.getElementById('userRoleDisplay');
+            const authBtnText = document.getElementById('authBtnText');
+            const authBtnIcon = document.getElementById('authBtnIcon');
+            const permission = document.getElementById('editPermissionBadge');
+            const chatInput = document.getElementById('chatInputArea');
+            const loginNotice = document.getElementById('chatLoginNotice');
+            if (!currentUser && hiddenMessagesMode) {
+                hiddenMessagesMode = false;
+                document.getElementById('hiddenMessagesPanel').classList.add('hidden');
+                document.getElementById('hiddenMessagesToggle').textContent = 'Tin nhắn đã ẩn';
+            }
+            if (currentUser) {
+                userNameDisplay.textContent = currentUser.name;
+                userRoleDisplay.textContent =  currentUser.role;
+                authBtnText.textContent = 'Đăng Xuất';
+                authBtnIcon.setAttribute('data-lucide', 'log-out');
+                permission.textContent = currentUser.name;
+                permission.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300';
+                chatInput.classList.remove('hidden');
+                loginNotice.classList.add('hidden');
+            } else {
+                userNameDisplay.textContent = 'Chế độ Khách';
+                userRoleDisplay.textContent = 'Đăng nhập để lưu code lên hệ thống';
+                authBtnText.textContent = 'Đăng Nhập';
+                authBtnIcon.setAttribute('data-lucide', 'log-in');
+                permission.textContent = 'Chế độ: Khách';
+                permission.className = 'px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 border border-indigo-300';
+                chatInput.classList.add('hidden');
+                loginNotice.classList.remove('hidden');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function loginUser() {
+            currentUser = null;
+            updateUIForState();
+        }
+
+        function logout() {
+            sessionToken = '';
+            currentUser = null;
+            localStorage.removeItem(SESSION_TOKEN_KEY);
+            localStorage.removeItem(SESSION_USER_KEY);
+            updateUIForState();
+            speakChibi('Đã đăng xuất. Bản nháp vẫn được giữ trên thiết bị này.');
+        }
+
+        async function handleLoginSubmit(event) {
+            event.preventDefault();
+            const button = document.querySelector('#loginModal button[type="submit"]');
+            const mssv = document.getElementById('mssvInput').value.trim().toUpperCase();
+            button.disabled = true;
+            speakChibi('Đang xác thực MSSV...');
+            try {
+                const result = await apiRequest('auth', { mssv: mssv }, 20000);
+                if (!result.token || !result.user) throw new Error('Máy chủ không cấp phiên đăng nhập.');
+                sessionToken = result.token;
+                currentUser = result.user;
+                localStorage.setItem(SESSION_TOKEN_KEY, sessionToken);
+                localStorage.setItem(SESSION_USER_KEY, JSON.stringify(currentUser));
+                closeLoginModal();
+                updateUIForState();
+                speakChibi('Đăng nhập thành công. Xin chào ' + currentUser.name + '!');
+            } catch (error) {
+                console.error('Đăng nhập thất bại:', error);
+                speakChibi('Đăng nhập không thành công: ' + error.message);
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function restoreSession() {
+            if (!sessionToken) return;
+            try {
+                const result = await apiRequest('session', {}, 12000);
+                currentUser = result.user;
+                localStorage.setItem(SESSION_USER_KEY, JSON.stringify(currentUser));
+                updateUIForState();
+            } catch (error) {
+                console.warn('Phiên đăng nhập không còn hợp lệ:', error.message);
+            }
+        }
+
+        function showCloudConflict(remote) {
+            pendingCloudConflict = remote;
+            setSyncStatus('Có phiên bản mới', 'error');
+            const status = document.getElementById('draftStatus');
+            status.textContent = 'Có phiên bản mới trên hệ thống. Chọn giữ bản hiện tại hoặc lấy data mới trên hệ thống.';
+            let panel = document.getElementById('cloudConflictPanel');
+            if (!panel) {
+                panel = document.createElement('div');
+                panel.id = 'cloudConflictPanel';
+                panel.className = 'flex flex-wrap gap-2 items-center p-3 mb-2 rounded-xl bg-amber-50 border border-amber-200 text-xs';
+                document.querySelector('.code-editor-box').before(panel);
+            }
+            panel.innerHTML = '<strong class="mr-1">Có phiên bản mới trên hệ thống.</strong>' +
+                '<button type="button" class="px-3 py-1.5 rounded-lg bg-white border font-bold" onclick="resolveCloudConflict(false)">Giữ bản hiện tại</button>' +
+                '<button type="button" class="px-3 py-1.5 rounded-lg bg-sapphire-600 text-white font-bold" onclick="resolveCloudConflict(true)">Lấy data mới</button>';
+        }
+
+        function resolveCloudConflict(useRemote) {
+            if (!pendingCloudConflict) return;
+            const remote = pendingCloudConflict;
+            pendingCloudConflict = null;
+            const panel = document.getElementById('cloudConflictPanel');
+            if (panel) panel.remove();
+            lastKnownDocumentVersion = remote.version;
+            lastKnownDocumentContent = remote.content;
+            localDraftBaseContent = remote.content;
+            lastKnownTimestamp = remote.timestamp || '';
+            if (useRemote) {
+                editorUndoStack.push(document.getElementById('codeEditor').value);
+                if (editorUndoStack.length > HISTORY_LIMIT) editorUndoStack.shift();
+                editorRedoStack.length = 0;
+                applyEditorValue(remote.content, { record: false, save: false });
+            }
+            saveLocalDraft();
+            updateDocumentMeta(remote);
+            const localChangesRemain = !useRemote && document.getElementById('codeEditor').value !== remote.content;
+            setSyncStatus(useRemote ? 'Đã nhận bản mới' : localChangesRemain ? 'Thay đổi cục bộ' : 'Đã đồng bộ',
+                useRemote ? 'good' : localChangesRemain ? 'pending' : 'good');
+            document.getElementById('draftStatus').textContent = localChangesRemain
+                ? 'Thay đổi cục bộ — đã giữ bản hiện tại'
+                : 'Đã lấy data mới nhất từ hệ thống';
+            updateEditorHistoryButtons();
+        }
+
+        function updateDocumentMeta(data) {
+            document.getElementById('lastUpdatedTime').textContent = formatChatTimestamp(data.timestamp) || data.timestamp || '';
+            document.getElementById('lastUserDisplay').textContent = formatDisplayName(data.author || 'Hệ thống');
+        }
+
+        function updateUtilityClock() {
+            const clock = document.getElementById('utilityClock');
+            if (clock) {
+                clock.textContent = new Intl.DateTimeFormat('vi-VN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hourCycle: 'h23'
+                }).format(new Date());
+            }
+        }
+
+        async function fetchLiveData(isManual) {
+            if (isFetchingLiveData) return;
+            isFetchingLiveData = true;
+            if (isManual) setManualRefreshState(true);
+            try {
+                const data = await apiRequest('read', {}, 20000);
+                if (historyPreviewActive) {
+                    updateDocumentMeta(data);
+                    setSyncStatus('Đang xem phiên bản cũ', 'pending');
+                    return;
+                }
+                const editor = document.getElementById('codeEditor');
+                const hasDraft = Boolean(readLocalDraft());
+                const baselineContent = localDraftBaseContent !== null
+                    ? localDraftBaseContent
+                    : lastKnownDocumentContent;
+                const baselineVersion = lastKnownDocumentVersion;
+                const hasLocalChanges = baselineContent !== null
+                    ? editor.value !== baselineContent
+                    : hasDraft && editor.value !== data.content;
+                const hasServerChanges = (baselineVersion !== null &&
+                    Number(data.version) !== Number(baselineVersion)) ||
+                    (baselineContent !== null && data.content !== baselineContent) ||
+                    (baselineVersion === null && baselineContent === null &&
+                        lastKnownDocumentContent !== null && data.content !== lastKnownDocumentContent);
+                if (baselineVersion === null && !hasDraft && editor.value === '') {
+                    applyEditorValue(data.content || '', { record: false, save: false });
+                    localDraftBaseContent = data.content || '';
+                    lastKnownDocumentContent = data.content || '';
+                    lastKnownDocumentVersion = data.version;
+                    saveLocalDraft();
+                } else if (hasServerChanges && hasLocalChanges &&
+                    data.content !== editor.value) {
+                    showCloudConflict(data);
+                } else if (hasServerChanges && !hasLocalChanges) {
+                    if (data.content !== editor.value) {
+                        applyEditorValue(data.content || '', { record: true, save: false });
+                    }
+                    localDraftBaseContent = data.content || '';
+                }
+                if (!pendingCloudConflict) {
+                    lastKnownDocumentVersion = data.version;
+                    lastKnownDocumentContent = data.content;
+                    if (localDraftBaseContent === null) {
+                        localDraftBaseContent = data.content || '';
+                    }
+                    lastKnownTimestamp = data.timestamp || '';
+                    saveLocalDraft();
+                    if (editor.value === data.content) {
+                        setSyncStatus('Đã đồng bộ', 'good');
+                    } else {
+                        setSyncStatus('Thay đổi cục bộ', 'pending');
+                        document.getElementById('draftStatus').textContent = 'Có thay đổi cục bộ';
+                    }
+                }
+                updateDocumentMeta(data);
+                syncRetryDelay = 5000;
+                if (isManual) speakChibi('Đã tải dữ liệu mới nhất thành công.');
+            } catch (error) {
+                console.error('Lỗi tải dữ liệu:', error);
+                setSyncStatus(navigator.onLine ? 'Lỗi - sẽ thử lại' : 'Ngoại tuyến', 'error');
+                if (isManual) speakChibi('Không tải được dữ liệu: ' + error.message);
+                scheduleSyncRetry();
+            } finally {
+                isFetchingLiveData = false;
+                setManualRefreshState(false);
+            }
+        }
+
+        function scheduleSyncRetry() {
+            if (syncRetryTimer) return;
+            const delay = syncRetryDelay;
+            syncRetryDelay = Math.min(syncRetryDelay * 2, 60000);
+            syncRetryTimer = setTimeout(() => {
+                syncRetryTimer = null;
+                if (navigator.onLine) {
+                    if (pendingCloudSave && currentUser && sessionToken) pushLiveData();
+                    else fetchLiveData(false);
+                }
+            }, delay);
+        }
+
+        async function pushLiveData() {
+            if (historyPreviewActive) {
+                speakChibi('Đóng chế độ xem trước hoặc áp dụng bản cũ trước khi lưu.');
+                return;
+            }
+            if (!currentUser || !sessionToken) {
+                speakChibi('Vui lòng đăng nhập để lưu dữ liệu.');
+                openLoginModal();
+                return;
+            }
+            if (pendingCloudConflict) {
+                speakChibi('Hãy xử lý xung đột đồng bộ trước khi lưu.');
+                return;
+            }
+            const isAdmin = currentUser.role &&
+                String(currentUser.role).trim().toLowerCase() === 'admin';
+            if (!isAdmin && !confirm('Xác nhận tải code hiện tại lên hệ thống? Nội dung mới sẽ được lưu thành phiên bản mới.')) {
+                return;
+            }
+            const content = document.getElementById('codeEditor').value;
+            const button = document.getElementById('pushBtn');
+            button.disabled = true;
+            setSyncStatus('Đang lưu...', 'pending');
+            try {
+                const result = await apiRequest('write', {
+                    content: content,
+                    expectedVersion: lastKnownDocumentVersion == null ? 0 : lastKnownDocumentVersion
+                }, 30000);
+                lastKnownDocumentVersion = result.version;
+                lastKnownDocumentContent = content;
+                localDraftBaseContent = content;
+                lastKnownTimestamp = result.timestamp;
+                pendingCloudSave = false;
+                updateDocumentMeta(result);
+                saveLocalDraft();
+                setSyncStatus('Đã lưu lên máy chủ', 'good');
+                loadSidebarHistory(false);
+                speakChibi('Đã lưu phiên bản ' + result.version + ' thành công.');
+            } catch (error) {
+                if (error.current && error.current.content === content) {
+                    lastKnownDocumentVersion = error.current.version;
+                    lastKnownDocumentContent = error.current.content;
+                    localDraftBaseContent = error.current.content;
+                    lastKnownTimestamp = error.current.timestamp || '';
+                    pendingCloudSave = false;
+                    saveLocalDraft();
+                    updateDocumentMeta(error.current);
+                    setSyncStatus('Đã lưu lên máy chủ', 'good');
+                    speakChibi('Máy chủ đã nhận nội dung trước đó; không tạo phiên bản trùng.');
+                } else if (error.current) showCloudConflict(error.current);
+                else {
+                    console.error('Lỗi lưu dữ liệu:', error);
+                    pendingCloudSave = true;
+                    setSyncStatus('Chưa đồng bộ - còn bản nháp', 'error');
+                    scheduleSyncRetry();
+                    speakChibi('Không lưu được lên máy chủ. Bản nháp vẫn còn trên thiết bị: ' + error.message);
+                }
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function loadSidebarHistory(announce) {
+            const list = document.getElementById('sidebarHistoryList');
+            const status = document.getElementById('sidebarHistoryStatus');
+            const button = document.getElementById('refreshHistoryBtn');
+            if (announce) speakChibi('Đang tải 3 phiên bản gần nhất từ Google Apps Script...');
+            if (button) button.disabled = true;
+            list.innerHTML = '<p class="text-xs text-slate-500">Đang tải lịch sử...</p>';
+            try {
+                const result = await apiRequest('history', {}, 20000);
+                versionHistoryCache = Array.isArray(result.versions) ? result.versions : [];
+                if (!versionHistoryCache.length) {
+                    list.innerHTML = '<p class="text-xs text-slate-500">Chưa có phiên bản trên máy chủ.</p>';
+                } else {
+                    list.innerHTML = versionHistoryCache.map((version, index) => `
+                        <div class="p-3 rounded-xl bg-white/80 border border-slate-200 space-y-2">
+                            <div class="flex justify-between gap-2 text-[11px]">
+                                <span class="font-extrabold text-sapphire-700">Phiên bản #${escapeHTML(Number(version.version) + 1)}</span>
+                                <span class="text-slate-500">${escapeHTML(formatChatTimestamp(version.timestamp) || version.timestamp || '')}</span>
+                            </div>
+                            <div class="truncate text-xs font-semibold text-slate-700">${escapeHTML(version.author || 'Người dùng')}</div>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="viewSidebarVersion(${index})" class="glass-input flex-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-sapphire-700">Xem</button>
+                                <button type="button" onclick="applySidebarVersion(${index})" class="sapphire-gradient-btn flex-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-white">Áp dụng</button>
+                            </div>
+                        </div>`).join('');
+                }
+               
+                if (announce) speakChibi('Đã tải xong lịch sử phiên bản.');
+            } catch (error) {
+                list.innerHTML = '<p class="text-xs text-rose-600">Không tải được lịch sử phiên bản.</p>';
+                status.textContent = error.message;
+                if (announce) speakChibi('Không tải được lịch sử phiên bản: ' + error.message);
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
+        function viewSidebarVersion(index) {
+            const version = versionHistoryCache[index];
+            if (!version) return;
+            const editor = document.getElementById('codeEditor');
+            if (!historyPreviewActive) historyPreviewOriginal = editor.value;
+            historyPreviewActive = true;
+            historyPreviewVersion = version;
+            editor.value = String(version.content || '');
+            editor.readOnly = true;
+            updateLineNumbers();
+            updateCharCount();
+            document.getElementById('historyPreviewLabel').textContent =
+                `Đang xem phiên bản #${Number(version.version) + 1} • ${formatChatTimestamp(version.timestamp) || version.timestamp} • Chỉ đọc`;
+            const controls = document.getElementById('historyPreviewControls');
+            controls.classList.remove('hidden');
+            controls.classList.add('flex');
+            document.getElementById('draftStatus').textContent = 'Đang xem trước phiên bản — chưa thay đổi bản nháp';
+            setSyncStatus('Đang xem phiên bản cũ', 'pending');
+            speakChibi('Đang hiển thị phiên bản cũ trong khung code. Bấm Áp dụng nếu muốn thay đổi nội dung.');
+        }
+
+        function cancelHistoryPreview() {
+            if (!historyPreviewActive) return;
+            const editor = document.getElementById('codeEditor');
+            editor.value = historyPreviewOriginal;
+            editor.readOnly = false;
+            historyPreviewActive = false;
+            historyPreviewVersion = null;
+            historyPreviewOriginal = '';
+            document.getElementById('historyPreviewControls').classList.add('hidden');
+            document.getElementById('historyPreviewControls').classList.remove('flex');
+            updateLineNumbers();
+            updateCharCount();
+            const isDirty = editor.value !== lastKnownDocumentContent;
+            setSyncStatus(isDirty ? 'Thay đổi cục bộ' : 'Đã đồng bộ', isDirty ? 'pending' : 'good');
+            document.getElementById('draftStatus').textContent = isDirty
+                ? 'Bản nháp có thay đổi cục bộ'
+                : 'Bản nháp đã lưu trên thiết bị';
+        }
+
+        function applyHistoryPreview() {
+            if (!historyPreviewActive || !historyPreviewVersion) return;
+            const version = historyPreviewVersion;
+            if (String(version.content || '') === historyPreviewOriginal) {
+                cancelHistoryPreview();
+                speakChibi('Phiên bản này giống nội dung hiện tại, không có thay đổi cần áp dụng.');
+                return;
+            }
+            const editor = document.getElementById('codeEditor');
+            editor.value = historyPreviewOriginal;
+            editor.readOnly = false;
+            historyPreviewActive = false;
+            historyPreviewVersion = null;
+            historyPreviewOriginal = '';
+            document.getElementById('historyPreviewControls').classList.add('hidden');
+            document.getElementById('historyPreviewControls').classList.remove('flex');
+            applyEditorValue(version.content, { record: true, focus: false });
+            setSyncStatus('Thay đổi cục bộ', 'pending');
+            document.getElementById('draftStatus').textContent = `Đã áp dụng phiên bản #${Number(version.version) + 1} — thay đổi cục bộ`;
+            speakChibi('Đã áp dụng bản lịch sử vào code. Đây là thay đổi cục bộ, chưa ghi lên máy chủ.');
+        }
+
+        function applySidebarVersion(index) {
+            const version = versionHistoryCache[index];
+            if (!version) return;
+            if (!confirm(`Áp dụng nội dung tại phiên bản #${Number(version.version) + 1} vào code hiện tại? Thay đổi sẽ ở trạng thái cục bộ cho đến khi bạn lưu.`)) return;
+            if (historyPreviewActive) cancelHistoryPreview();
+            if (String(version.content || '') === document.getElementById('codeEditor').value) {
+                speakChibi('Phiên bản này giống nội dung hiện tại, không có thay đổi cần áp dụng.');
+                return;
+            }
+            applyEditorValue(version.content, { record: true, focus: false });
+            setSyncStatus('Thay đổi cục bộ', 'pending');
+            document.getElementById('draftStatus').textContent = `Đã áp dụng phiên bản #${Number(version.version) + 1} — thay đổi cục bộ`;
+            speakChibi(`Đã áp dụng phiên bản #${Number(version.version) + 1}. Nội dung chưa được ghi lên máy chủ.`);
+        }
+
+        function hideChatMessage(id) {
+            return setChatMessageVisibility(id, 'hide_chat');
+        }
+
+        function showHiddenMessages() {
+            if (document.getElementById('chatBoxPopup').classList.contains('opacity-0')) toggleChatPopup();
+            if (!currentUser || !sessionToken) {
+                speakChibi('Đăng nhập để xem và quản lý tin nhắn bạn đã ẩn.');
+                openLoginModal();
+                return;
+            }
+            hiddenMessagesMode = !hiddenMessagesMode;
+            speakChibi(hiddenMessagesMode
+                ? 'Đang tải các tin nhắn bạn đã ẩn từ Google Apps Script...'
+                : 'Đang tải danh sách tin nhắn mới nhất...');
+            const panel = document.getElementById('hiddenMessagesPanel');
+            panel.classList.toggle('hidden', !hiddenMessagesMode);
+            const toggle = document.getElementById('hiddenMessagesToggle');
+            if (toggle) toggle.textContent = hiddenMessagesMode ? 'Quay lại tin nhắn' : 'Tin nhắn đã ẩn';
+            fetchLiveChatData();
+        }
+
+        async function restoreHiddenMessages() {
+            if (!currentUser) return;
+            speakChibi('Đang hiện lại các tin nhắn trên Google Apps Script...');
+            try {
+                const hidden = cachedChatMessages.filter(message =>
+                    message.status === 'hidden' && message.ownerMssv === currentUser.mssv);
+                for (const message of hidden) {
+                    await apiRequest('restore_chat', { messageId: message.id }, 15000);
+                }
+                await fetchLiveChatData();
+            } catch (error) {
+                console.error('Không thể hiện lại toàn bộ tin nhắn:', error);
+                speakChibi(error.message || 'Không thể hiện lại toàn bộ tin nhắn.');
+            }
+        }
+
+        function updateHiddenMessageCount() {
+            const count = cachedChatMessages.filter(message =>
+                message.status === 'hidden' && currentUser && message.ownerMssv === currentUser.mssv).length;
+            document.getElementById('hiddenMessagesCount').textContent = count + ' tin nhắn bạn đã ẩn';
+        }
+
+        async function setChatMessageVisibility(id, action) {
+            if (!currentUser || !sessionToken) {
+                openLoginModal();
+                return;
+            }
+            try {
+                if (action === 'hide_chat') speakChibi('Đang ẩn tin nhắn trên Google Apps Script...');
+                if (action === 'restore_chat') speakChibi('Đang hiện lại tin nhắn trên Google Apps Script...');
+                await apiRequest(action, { messageId: String(id) }, 15000);
+                await fetchLiveChatData();
+            } catch (error) {
+                console.error('Không thể thay đổi trạng thái tin nhắn:', error);
+                speakChibi(error.message || 'Không thể cập nhật trạng thái tin nhắn.');
+            }
+        }
+
+        function renderChatMessages(messages) {
+            cachedChatMessages = Array.isArray(messages) ? messages : cachedChatMessages;
+            const container = document.getElementById('chatMessagesList');
+            const visible = cachedChatMessages.filter(msg => {
+                const hidden = msg.status === 'hidden';
+                if (hidden !== hiddenMessagesMode) return false;
+                return true;
+            });
+            const newest = cachedChatMessages[cachedChatMessages.length - 1];
+            const signature = newest ? String(newest.id) : '';
+            if (chatRenderSignature && signature && signature !== chatRenderSignature &&
+                document.getElementById('chatBoxPopup').classList.contains('opacity-0')) {
+                document.getElementById('unreadChatDot').classList.remove('hidden');
+            }
+            chatRenderSignature = signature;
+            updateHiddenMessageCount();
+            if (!visible.length) {
+                container.innerHTML = '<div class="text-center text-[11px] text-slate-400 py-6">' +
+                    (hiddenMessagesMode ? 'Không có tin nhắn đã ẩn.' : 'Chưa có tin nhắn nào.') +
+                    '</div>';
+                return;
+            }
+            const shouldScroll = container.scrollHeight - container.scrollTop - container.clientHeight < 48;
+            container.innerHTML = visible.map(msg => {
+                const author = formatDisplayName(msg.author || 'Người dùng');
+                const isMe = currentUser && author === currentUser.name;
+                const text = escapeHTML(msg.text || '');
+                const time = escapeHTML(formatChatTime(msg.timestamp));
+                const side = isMe ? 'items-end' : 'items-start';
+                const bubble = isMe ? 'sapphire-gradient-btn text-white rounded-tr-xs' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-xs';
+                const isOwner = currentUser && msg.ownerMssv === currentUser.mssv;
+                const action = isOwner
+                    ? hiddenMessagesMode
+                        ? `<button type="button" onclick="restoreChatMessage('${escapeHTML(msg.id)}')" class="text-sapphire-600 hover:underline">Hiện lại</button>`
+                        : `<button type="button" onclick="hideChatMessage('${escapeHTML(msg.id)}')" class="text-slate-400 hover:text-rose-600" aria-label="Ẩn tin nhắn của bạn">Ẩn</button>`
+                    : '';
+                return `<div class="flex flex-col ${side} space-y-1">
+                    <div class="flex items-center gap-1.5"><span class="font-bold text-[11px] text-slate-700">${escapeHTML(author)}</span><span class="text-[10px] text-slate-400">${time}</span>${action}</div>
+                    <div class="${bubble} px-3.5 py-2 rounded-2xl max-w-[85%] shadow-sm break-words leading-relaxed">${text}</div>
+                </div>`;
+            }).join('');
+            if (shouldScroll) scrollChatToBottom();
+        }
+
+        function restoreChatMessage(id) {
+            return setChatMessageVisibility(id, 'restore_chat');
+        }
+
+        async function fetchLiveChatData() {
+            if (isFetchingChatData) {
+                chatFetchRequested = true;
+                return;
+            }
+            isFetchingChatData = true;
+            try {
+                const result = await apiRequest('read_chat', { includeHidden: hiddenMessagesMode }, 15000);
+                if (Array.isArray(result.messages)) renderChatMessages(result.messages);
+            } catch (error) {
+                console.error('Lỗi tải chat:', error);
+            } finally {
+                isFetchingChatData = false;
+                if (chatFetchRequested) {
+                    chatFetchRequested = false;
+                    fetchLiveChatData();
+                }
+            }
+        }
+
+        async function sendChatMessage() {
+            if (isSendingChatMessage) return;
+            if (!currentUser || !sessionToken) {
+                openLoginModal();
+                return;
+            }
+            const input = document.getElementById('chatMessageInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            isSendingChatMessage = true;
+            setChatSendingState(true);
+            try {
+                await apiRequest('write_chat', { text: text }, 20000);
+                await fetchLiveChatData();
+            } catch (error) {
+                console.error('Không gửi được tin nhắn:', error);
+                if (!input.value) input.value = text;
+                speakChibi('Không gửi được tin nhắn. Nội dung vẫn được giữ trong ô nhập.');
+            } finally {
+                isSendingChatMessage = false;
+                setChatSendingState(false);
+            }
+        }
+
+        function pasteCode() {
+            if (historyPreviewActive) {
+                speakChibi('Đóng chế độ xem trước trước khi dán nội dung mới.');
+                return;
+            }
+            navigator.clipboard.readText().then(text => {
+                if (text) {
+                    applyEditorValue(text, { record: true, focus: true });
+                    speakChibi('Đã dán nội dung từ Clipboard.');
+                }
+            }).catch(() => speakChibi('Hãy nhấn Ctrl+V trực tiếp trong khung code.'));
+        }
+
+        function clearEditor() {
+            if (historyPreviewActive) {
+                speakChibi('Đóng chế độ xem trước trước khi xóa nội dung.');
+                return;
+            }
+            if (!document.getElementById('codeEditor').value) return;
+            applyEditorValue('', { record: true, focus: true });
+            speakChibi('Đã xóa nội dung trong trình soạn thảo. Có thể hoàn tác.');
+        }
+
+        function setupIdleDetection() {
+            if (idleListenersReady) return;
+            idleListenersReady = true;
+            const reset = () => {
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(triggerChibiInteraction, 10000);
+            };
+            ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(eventName =>
+                window.addEventListener(eventName, reset, { passive: true }));
+            reset();
+        }
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(triggerChibiInteraction, 10000);
+        }
+
+        function initChibiEyeTracking() {
+            if (eyeTrackingReady) return;
+            eyeTrackingReady = true;
+            const eyes = document.getElementById('chibiEyes');
+            window.addEventListener('mousemove', event => {
+                const rect = eyes.getBoundingClientRect();
+                const angle = Math.atan2(event.clientY - (rect.top + rect.height / 2),
+                    event.clientX - (rect.left + rect.width / 2));
+                const distance = Math.min(3, Math.hypot(event.clientX - rect.left, event.clientY - rect.top) / 30);
+                eyes.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+            }, { passive: true });
+        }
+
+        document.addEventListener('keydown', event => {
+            const editor = document.getElementById('codeEditor');
+            if (event.target !== editor || !(event.ctrlKey || event.metaKey)) return;
+            const key = event.key.toLowerCase();
+            if (key === 'z' && !event.shiftKey) {
+                event.preventDefault();
+                undoEditor();
+            } else if (key === 'y' || (key === 'z' && event.shiftKey)) {
+                event.preventDefault();
+                redoEditor();
+            }
+        });
+
+        window.addEventListener('online', () => {
+            setSyncStatus('Đang kết nối lại...', 'pending');
+            fetchLiveData(false);
+            fetchLiveChatData();
+        });
+        window.addEventListener('offline', () => setSyncStatus('Ngoại tuyến - bản nháp được giữ', 'error'));
+        window.addEventListener('beforeunload', saveLocalDraft);
+        window.addEventListener('DOMContentLoaded', () => {
+            setupEditorLineNumbers();
+            updateUIForState();
+            restoreSession();
+            loadSidebarHistory(false);
+        }, { once: true });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                lastBackgroundDocumentSyncAt = 0;
+                fetchLiveData(false);
+                fetchLiveChatData();
+            }
+        });
     </script>
 </body>
 </html>
